@@ -1,0 +1,9 @@
+version: '3'
+services:
+  official-service:
+    ports:
+      - "4000:4000"
+    image: "official-services-image"  
+    deploy:
+        mode: replicated
+        replicas: 5 
