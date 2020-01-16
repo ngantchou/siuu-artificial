@@ -12,7 +12,7 @@ var Web3EthAccounts = require("web3-eth-accounts");
 const axios = require("axios");
 web3.setProvider(
   new web3.providers.HttpProvider(
-    "https://ropsten.infura.io/f94bc58a280645dba2eff3e86a959b10"
+    "https://mainnet.infura.io/f94bc58a280645dba2eff3e86a959b10"
   )
 );
 const decoder = new InputDataDecoder(abi);
@@ -236,7 +236,7 @@ router.post("/transfer", async function(request, response) {
             gasLimit: web3.toHex(gasLimit),
             to: contractAddress,
             data: data,
-            chainId: 0x03
+            chainId: 0x01
           };
           privateKey = Buffer.from(privateKey, "hex");
           let tx = new Tx(rawTransaction);
@@ -463,7 +463,7 @@ router.get("/track/:walletAddress/:contractAddress", async function(req, res) {
   var transactions = [];
   try {
     let tx = await axios.get(
-      `https://api-ropsten.etherscan.io/api?module=account&action=tokentx&contractaddress=${req.params.contractAddress}&address=${req.params.walletAddress}&sort=asc&apikey=R3NZBT5BV4WK3VER42TJ3B5UK4WYEDZENH`
+      `https://api.etherscan.io/api?module=account&action=tokentx&contractaddress=${req.params.contractAddress}&address=${req.params.walletAddress}&sort=asc&apikey=R3NZBT5BV4WK3VER42TJ3B5UK4WYEDZENH`
     );
     console.log(tx.data.result);
     var txids = tx.data.result;
