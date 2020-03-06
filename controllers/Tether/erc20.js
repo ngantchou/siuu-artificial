@@ -12,7 +12,7 @@ var Web3EthAccounts = require("web3-eth-accounts");
 const axios = require("axios");
 web3.setProvider(
   new web3.providers.HttpProvider(
-    "https://mainnet.infura.io/f94bc58a280645dba2eff3e86a959b10"
+    "https://ropsten.infura.io/v3/f94bc58a280645dba2eff3e86a959b10"
   )
 );
 const decoder = new InputDataDecoder(abi);
@@ -236,7 +236,7 @@ router.post("/transfer", async function(request, response) {
             gasLimit: web3.toHex(gasLimit),
             to: contractAddress,
             data: data,
-            chainId: 0x01
+            chainId: 0x03
           };
           privateKey = Buffer.from(privateKey, "hex");
           let tx = new Tx(rawTransaction);
@@ -449,7 +449,7 @@ router.get("/fetchtx/:hash", async function(req, response) {
   } finally {
     if (finalResponse == null) {
       return response.status(400).json({
-        meta: errors
+        payload: "Invalid Hash or contract address"
       });
     } else {
       return response.status(200).json({
@@ -463,7 +463,7 @@ router.get("/track/:walletAddress/:contractAddress", async function(req, res) {
   var transactions = [];
   try {
     let tx = await axios.get(
-      `https://api.etherscan.io/api?module=account&action=tokentx&contractaddress=${req.params.contractAddress}&address=${req.params.walletAddress}&sort=asc&apikey=R3NZBT5BV4WK3VER42TJ3B5UK4WYEDZENH`
+      `https://api-ropsten.etherscan.io/api?module=account&action=tokentx&contractaddress=${req.params.contractAddress}&address=${req.params.walletAddress}&sort=asc&apikey=R3NZBT5BV4WK3VER42TJ3B5UK4WYEDZENH`
     );
     console.log(tx.data.result);
     var txids = tx.data.result;
@@ -517,29 +517,55 @@ function getTransaction(hash) {
   return new Promise(function(resolve, reject) {
     try {
       web3.eth.getTransaction(hash, async function(err, transaction) {
-        let inputdecode = decoder.decodeData(transaction.input);
-        console.log(inputdecode.inputs[1].toString());
-        var confirmation = web3.eth.blockNumber - transaction.blockNumber;
-        let info = await getTokenInfo(transaction.to);
-        let decimals =
-          parseInt(inputdecode.inputs[1].toString()) / 10 ** info.decimals;
-        ResponseData = {
-          name: info.name,
-          symbol: info.symbol,
-          from: transaction.from,
-          to: transaction.toAddress,
-          value: decimals,
-          gas_price: transaction.gasPrice,
-          hash: transaction.hash,
-          confirmations: confirmation
-        };
-        resolve(ResponseData);
+        if (transaction !== undefined) {
+          let inputdecode = await decoder.decodeData(transaction.input);
+          console.log(inputdecode.inputs[1].toString());
+          var confirmation = web3.eth.blockNumber - transaction.blockNumber;
+          let info = await getTokenInfo(transaction.to);
+          let decimals =
+            parseInt(inputdecode.inputs[1].toString()) / 10 ** info.decimals;
+          ResponseData = {
+            name: info.name,
+            symbol: info.symbol,
+            from: transaction.from,
+            to: transaction.toAddress,
+            value: decimals,
+            gas_price: transaction.gasPrice,
+            hash: transaction.hash,
+            confirmations: confirmation
+          };
+          resolve(ResponseData);
+        } else {
+          reject("Invalid Hash or contract address");
+        }
       });
     } catch (e) {
       reject(e);
     }
   });
 }
+
+// function getTransaction(hash) {
+//   var ResponseData;
+//   return new Promise(async function (resolve, reject) {
+//     await web3.eth.getTransaction(hash, async function (err, transaction) {
+//       let inputdecode = await decoder.decodeData(transaction.input);
+//       console.log("web3.eth.blockNumber:", await web3.eth.blockNumber);
+//       console.log("transaction.blockNumber:", transaction.blockNumber)
+//       var confirmation = await web3.eth.blockNumber - transaction.blockNumber;
+//       ResponseData = {
+//         name: "USDT",
+//         from: transaction.from,
+//         to: transaction.toAddress,
+//         value: parseInt(inputdecode.inputs[1]) / 10 ** 6,
+//         gas_price: transaction.gasPrice,
+//         hash: transaction.hash,
+//         confirmations: confirmation
+//       };
+//       resolve(ResponseData);
+//     })
+//   });
+// }
 
 function getTokenInfo(contractAddress) {
   var ResponseData;
