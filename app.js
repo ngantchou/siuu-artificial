@@ -10,9 +10,15 @@ app.use(bodyParser.urlencoded({
 }));
 
 
-var erc20 = require('./controllers/Tether/erc20')
+var erc20Main = require('./controllers/Tether/erc20Main')
+var erc20Test = require('./controllers/Tether/erc20Test')
+var ethMain = require('./controllers/Ethereum/ethMain')
+var ethTest = require('./controllers/Ethereum/ethTest')
 
-app.use('/api/erc20', erc20);
+app.use('/api/token/mainnet', erc20Main);
+app.use('/api/token/testnet', erc20Test);
+app.use('/api/ether/mainnet', ethMain);
+app.use('/api/ether/testnet', ethTest);
 
 
 app.get('/', function (request, response) {
