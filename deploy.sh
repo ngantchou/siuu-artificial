@@ -15,4 +15,4 @@ docker build -t ERC20-services-image:latest .
 
 
 echo "Running docker image for ERC20...."
-docker run -d --name ERC20-service --restart=always -p 5000:5000 -e NODE_ENV=production ERC20-services-image:latest
+docker run -d --name erc-service --restart=always -p 5000:5000 -e NODE_ENV=production erc-services-image:latest
