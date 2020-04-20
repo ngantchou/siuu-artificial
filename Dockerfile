@@ -9,7 +9,7 @@
 # RUN npm run webpack
 
 
-FROM node:lts
+FROM node:8.13
 
 ENV USER=nodejs
 ENV USERID=6100
