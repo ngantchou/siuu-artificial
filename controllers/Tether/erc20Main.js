@@ -3,15 +3,15 @@ var express = require("express");
 var router = express.Router();
 var axios = require("axios");
 const Web3 = require("web3");
-const web3 = new Web3();
+// const web3 = new Web3();
 const ethUtil = require("ethereumjs-util");
 const ethereum_address = require("ethereum-address");
 const InputDataDecoder = require("ethereum-input-data-decoder");
 
-  web3.setProvider(
-  new web3.providers.HttpProvider("http://167.99.192.187:8545")
-);
-
+//   web3.setProvider(
+//   new web3.providers.HttpProvider("http://167.99.192.187:8545")
+// );
+var web3 = new Web3(new Web3.providers.HttpProvider('http://167.99.192.187:8545'));
 var abi = require("human-standard-token-abi");
 
 const decoder = new InputDataDecoder(abi);
