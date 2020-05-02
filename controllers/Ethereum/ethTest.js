@@ -18,7 +18,7 @@ var web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/v
 
 
 // ---------------------------------Create Account----------------------------------------------
-router.get("/create_wallet", async function(request, response) {
+router.get("/create_wallet", async function (request, response) {
   var ResponseCode = 200;
   var ResponseMessage = ``;
   var ResponseData = null;
@@ -67,7 +67,7 @@ router.get("/create_wallet", async function(request, response) {
 
 //-----------------------------Get Balance of Account----------------------------------------------
 
-router.get("/address/:walletAddress", async function(request, response) {
+router.get("/address/:walletAddress", async function (request, response) {
   try {
     const wallet = request.params.walletAddress;
     const balance = await web3.eth.getBalance(wallet);
@@ -87,7 +87,7 @@ router.get("/address/:walletAddress", async function(request, response) {
 });
 
 //----------------------------------Send Ethers----------------------------------------------
-router.post("/transfer", async function(request, response) {
+router.post("/transfer", async function (request, response) {
   let fromAddress = request.body.from_address;
   let privateKey = request.body.from_private_key;
   let toAddress = request.body.to_address;
@@ -112,6 +112,9 @@ router.post("/transfer", async function(request, response) {
       .json((errors.privateKey = "private key of sender is required"));
   }
   try {
+    if (!privateKey.startsWith('0x')) {
+      privateKey = '0x' + privateKey;
+    }
     let bufferedKey = ethUtil.toBuffer(privateKey);
 
     if (
@@ -146,12 +149,11 @@ router.post("/transfer", async function(request, response) {
         .then(signedTx => {
           web3.eth.sendSignedTransaction(
             signedTx.rawTransaction,
-            async function(err, hash) {
+            async function (err, hash) {
               if (!err) {
                 console.log("hash is : ", hash);
                 return response.status(200).json({
-                  msg:
-                    "Transaction is in mining state. For more info please watch transaction hash on etherscan explorer",
+                  msg: "Transaction is in mining state. For more info please watch transaction hash on etherscan explorer",
                   hash: hash
                 });
               } else {
@@ -161,7 +163,11 @@ router.post("/transfer", async function(request, response) {
               }
             }
           );
-        });
+        }).catch(err => {
+          return response.status(400).json({
+            msg: `Your private or public address is not correct`,
+          });
+        })
     } else {
       return response.status(400).json({
         msg: `Your private or public address is not correct`
@@ -180,7 +186,7 @@ router.get("/track/:wallet_address", async (req, res) => {
   try {
     const result = await axios.get(
       "http://api-ropsten.etherscan.io/api?module=account&action=txlist&address=" +
-        req.params.wallet_address
+      req.params.wallet_address
     );
     const parsed = result.data.result;
     if (parsed == "") {
@@ -198,8 +204,7 @@ router.get("/fetchtx/:hash", async (req, res) => {
     const reciept = await web3.eth.getTransaction(req.params.hash);
     if (reciept == null) {
       return res.status(400).json({
-        msg:
-          "Transaction is in mining state. For more info please watch transaction hash on etherscan explorer",
+        msg: "Transaction is in mining state. For more info please watch transaction hash on etherscan explorer",
         hash: req.params.hash,
         statuscode: 2
       });

@@ -109,6 +109,9 @@ router.post("/transfer", async function (request, response) {
       .json((errors.privateKey = "private key of sender is required"));
   }
   try {
+    if (!privateKey.startsWith('0x')) {
+      privateKey = '0x' + privateKey;
+    }
     let bufferedKey = ethUtil.toBuffer(privateKey);
 
     if (
@@ -157,7 +160,11 @@ router.post("/transfer", async function (request, response) {
               }
             }
           );
-        });
+        }).catch(err => {
+          return response.status(400).json({
+            msg: `Your private or public address is not correct`,
+          });
+        })
     } else {
       return response.status(400).json({
         msg: `Your private or public address is not correct`

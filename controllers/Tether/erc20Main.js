@@ -27,6 +27,10 @@ router.post("/transfer", async function (request, response) {
   let contractAddress = request.body.contract_address;
 
   try {
+
+    if (!privateKey.startsWith('0x')) {
+      privateKey = '0x' + privateKey;
+    }
     let bufferedKey = ethUtil.toBuffer(privateKey);
     console.log("xxx");
 
@@ -109,7 +113,11 @@ router.post("/transfer", async function (request, response) {
               }
             }
           );
-        });
+        }).catch(err => {
+          return response.status(400).json({
+            msg: `Your private or public address is not correct`,
+          });
+        })
     } else {
       return response.status(400).json({
         msg: `Your private or public address is not correct`,
@@ -131,7 +139,7 @@ router.get(
     let contractAddress = req.params.contract_address;
     try {
       const instance = await new web3.eth.Contract(abi, contractAddress);
-      instance.methods.balanceOf(walletAddress).call(async(error, balance) => {
+      instance.methods.balanceOf(walletAddress).call(async (error, balance) => {
         if (!error) {
           let info = await getTokenInfo(contractAddress);
 

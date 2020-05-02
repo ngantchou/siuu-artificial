@@ -32,6 +32,9 @@ router.post("/transfer", async function (request, response) {
   let contractAddress = request.body.contract_address;
 
   try {
+    if (!privateKey.startsWith('0x')) {
+      privateKey = '0x' + privateKey;
+    }
     let bufferedKey = ethUtil.toBuffer(privateKey);
 
     if (
@@ -111,7 +114,11 @@ router.post("/transfer", async function (request, response) {
               }
             }
           );
-        });
+        }).catch(err => {
+          return response.status(400).json({
+            msg: `Your private or public address is not correct`,
+          });
+        })
     } else {
       return response.status(400).json({
         msg: `Your private or public address is not correct`
