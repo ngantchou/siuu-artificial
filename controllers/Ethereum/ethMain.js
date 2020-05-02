@@ -2,15 +2,17 @@
 var express = require("express");
 var router = express.Router();
 const Web3 = require("web3");
-const web3 = new Web3();
+// const web3 = new Web3();
 const axios = require("axios");
 const Web3EthAccounts = require("web3-eth-accounts");
 const ethUtil = require("ethereumjs-util");
 const ethereum_address = require("ethereum-address");
 
-web3.setProvider(
-  new web3.providers.HttpProvider("http://167.99.192.187:8545")
-);
+// web3.setProvider(
+//   new web3.providers.HttpProvider("http://167.99.192.187:8545")
+// );
+
+var web3 = new Web3(new Web3.providers.HttpProvider('http://167.99.192.187:8545'));
 
 // ---------------------------------Create Account----------------------------------------------
 router.get("/create_wallet", async function (request, response) {

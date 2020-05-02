@@ -3,16 +3,19 @@ var express = require("express");
 var router = express.Router();
 var axios = require("axios");
 const Web3 = require("web3");
-const web3 = new Web3();
+// const web3 = new Web3();
 const ethUtil = require("ethereumjs-util");
 const ethereum_address = require("ethereum-address");
 const InputDataDecoder = require("ethereum-input-data-decoder");
 
-web3.setProvider(
-  new web3.providers.HttpProvider(
-    "https://ropsten.infura.io/v3/0148422f7f26401b9c90d085d2d3f928"
-  )
-);
+// web3.setProvider(
+//   new web3.providers.HttpProvider(
+//     "https://ropsten.infura.io/v3/0148422f7f26401b9c90d085d2d3f928"
+//   )
+// );
+
+var web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/0148422f7f26401b9c90d085d2d3f928'));
+
 
 var abi = require('human-standard-token-abi')
 
