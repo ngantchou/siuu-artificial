@@ -99,8 +99,7 @@ router.post("/transfer", async function (request, response) {
               if (!err) {
                 console.log("hash is : ", hash);
                 return response.status(200).json({
-                  msg:
-                    "Transaction is in mining state. For more info please watch transaction hash on rinkeby explorer",
+                  msg: "Transaction is in mining state. For more info please watch transaction hash on rinkeby explorer",
                   hash: hash,
                 });
               } else {
@@ -132,9 +131,11 @@ router.get(
     let contractAddress = req.params.contract_address;
     try {
       const instance = await new web3.eth.Contract(abi, contractAddress);
-      instance.methods.balanceOf(walletAddress).call((error, balance) => {
+      instance.methods.balanceOf(walletAddress).call(async(error, balance) => {
         if (!error) {
-          balance = web3.utils.fromWei(balance, "ether");
+          let info = await getTokenInfo(contractAddress);
+
+          balance = balance / 10 ** info.decimals;
           response.status(200).json({
             balance,
           });

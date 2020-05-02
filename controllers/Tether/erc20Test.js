@@ -130,9 +130,10 @@ router.get(
     let contractAddress = req.params.contract_address;
     try {
       const instance = await new web3.eth.Contract(abi, contractAddress);
-      instance.methods.balanceOf(walletAddress).call((error, balance) => {
+      instance.methods.balanceOf(walletAddress).call(async (error, balance) => {
         if (!error) {
-          balance = web3.utils.fromWei(balance, "ether");
+          let info = await getTokenInfo(contractAddress);
+          balance = balance / 10 ** info.decimals;
           response.status(200).json({
             balance
           });
