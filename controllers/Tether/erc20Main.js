@@ -8,7 +8,7 @@ const ethUtil = require("ethereumjs-util");
 const ethereum_address = require("ethereum-address");
 const InputDataDecoder = require("ethereum-input-data-decoder");
 
-web3.setProvider(
+  web3.setProvider(
   new web3.providers.HttpProvider("http://167.99.192.187:8545")
 );
 
