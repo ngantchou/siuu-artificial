@@ -46,24 +46,24 @@ app.post('*', function (req, res) {
     });
 });
 
-const options = {
-    key: fs.readFileSync('./key.pem'),
-    cert: fs.readFileSync('./cert.pem')
-  };
+// const options = {
+//     key: fs.readFileSync('./key.pem'),
+//     cert: fs.readFileSync('./cert.pem')
+//   };
   
-  https.createServer(options, function (req, res) {
-    console.log('App listening');
-    res.writeHead(200);
-    res.end("hello world\n");
+//   https.createServer(options, function (req, res) {
+//     console.log('App listening');
+//     res.writeHead(200);
+//     res.end("hello world\n");
 
-}).listen(5000);
+// }).listen(5000);
 
 
-// if (module === require.main) {
+if (module === require.main) {
 
-//     var server = app.listen(process.env.PORT || 5000, function () {
-//         var port = server.address().port;
-//         console.log('App listening on port %s', port);
-//     });
+    var server = app.listen(process.env.PORT || 5000, function () {
+        var port = server.address().port;
+        console.log('App listening on port %s', port);
+    });
 
-// }
+}

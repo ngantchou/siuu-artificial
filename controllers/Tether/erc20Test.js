@@ -14,12 +14,19 @@ const InputDataDecoder = require("ethereum-input-data-decoder");
 //   )
 // );
 
-var web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/0148422f7f26401b9c90d085d2d3f928'));
+var web3 = new Web3(
+  new Web3.providers.HttpProvider(
+    "https://ropsten.infura.io/v3/0148422f7f26401b9c90d085d2d3f928"
+  )
+);
 
-
-var abi = require('human-standard-token-abi')
+var abi = require("human-standard-token-abi");
 
 const decoder = new InputDataDecoder(abi);
+
+router.post("/webhook", async function (request, response) {
+  return request.status(200).json("OK");
+});
 
 // var contractAddress = "0x071dc402d73644a6f0bc9abad002d20c11e38823";
 //----------------------------------Send Tokens----------------------------------------------
@@ -32,8 +39,8 @@ router.post("/transfer", async function (request, response) {
   let contractAddress = request.body.contract_address;
 
   try {
-    if (!privateKey.startsWith('0x')) {
-      privateKey = '0x' + privateKey;
+    if (!privateKey.startsWith("0x")) {
+      privateKey = "0x" + privateKey;
     }
     let bufferedKey = ethUtil.toBuffer(privateKey);
 
@@ -59,7 +66,10 @@ router.post("/transfer", async function (request, response) {
       web3.eth.defaultAccount = fromAddress;
 
       console.log("0000000");
-      const tx_builder = await contract.methods.transfer(toAddress, tokenValue.toString());
+      const tx_builder = await contract.methods.transfer(
+        toAddress,
+        tokenValue.toString()
+      );
 
       console.log("11211212");
       let encoded_tx = tx_builder.encodeABI();
@@ -74,7 +84,7 @@ router.post("/transfer", async function (request, response) {
         from: fromAddress,
         to: contractAddress,
         data: encoded_tx,
-        chainId: 0x03
+        chainId: 0x03,
       };
 
       var estimatedGas = await web3.eth.estimateGas(transactionObject1);
@@ -90,45 +100,46 @@ router.post("/transfer", async function (request, response) {
         gasLimit: web3.utils.toHex(estimatedGas),
         to: contractAddress,
         data: encoded_tx,
-        chainId: 0x03
+        chainId: 0x03,
       };
-
 
       // console.log('transaction ', transactionObject)
       web3.eth.accounts
         .signTransaction(transactionObject, privateKey)
-        .then(signedTx => {
+        .then((signedTx) => {
           web3.eth.sendSignedTransaction(
             signedTx.rawTransaction,
             async function (err, hash) {
               if (!err) {
                 console.log("hash is : ", hash);
                 return response.status(200).json({
-                  msg: "Transaction is in mining state. For more info please watch transaction hash on rinkeby explorer",
-                  hash: hash
+                  msg:
+                    "Transaction is in mining state. For more info please watch transaction hash on rinkeby explorer",
+                  hash: hash,
                 });
               } else {
                 return response.status(400).json({
-                  msg: `Bad Request ${err}`
+                  msg: `Bad Request ${err}`,
                 });
               }
             }
           );
-        }).catch(err => {
+        })
+        .catch((err) => {
           return response.status(400).json({
             msg: `Your private or public address is not correct`,
           });
-        })
+        });
     } else {
       return response.status(400).json({
-        msg: `Your private or public address is not correct`
+        msg: `Your private or public address is not correct`,
       });
     }
   } catch (e) {
     return response.status(400).json({
       msg: "invalid transaction signing",
       e,
-      statuscode: 4
+      statuscode: 4,
     });
   }
 });
@@ -145,7 +156,7 @@ router.get(
           let info = await getTokenInfo(contractAddress);
           balance = balance / 10 ** info.decimals;
           response.status(200).json({
-            balance
+            balance,
           });
         }
       });
@@ -153,7 +164,7 @@ router.get(
       return response.status(400).json({
         msg: "invalid wallet or contract address",
         e,
-        statuscode: 4
+        statuscode: 4,
       });
     }
   }
@@ -183,13 +194,13 @@ router.get("/getinfo/:contract_address", async (req, response) => {
       name: data[0],
       symbol: data[1],
       decimals: data[2],
-      totalSupply: data[3] / 10 ** data[2]
+      totalSupply: data[3] / 10 ** data[2],
     });
   } catch (e) {
     return response.status(400).json({
       msg: "invalid contract address",
       e,
-      statuscode: 4
+      statuscode: 4,
     });
   }
 });
@@ -224,11 +235,11 @@ router.get("/fetchtx/:hash", async function (req, response) {
   } finally {
     if (finalResponse == null) {
       return response.status(400).json({
-        meta: "Tx not found on network"
+        meta: "Tx not found on network",
       });
     } else {
       return response.status(200).json({
-        payload: finalResponse
+        payload: finalResponse,
       });
     }
   }
@@ -247,7 +258,7 @@ function getTransaction(hash) {
 
           var confirmation =
             (await web3.eth.getBlockNumber()) - transaction.blockNumber;
-          let time = await web3.eth.getBlock(transaction.blockNumber)
+          let time = await web3.eth.getBlock(transaction.blockNumber);
           let info = await getTokenInfo(transaction.to);
           let decimals =
             parseInt(inputdecode.inputs[1].toString()) / 10 ** info.decimals;
@@ -261,7 +272,7 @@ function getTransaction(hash) {
             gas_price: transaction.gasPrice,
             hash: transaction.hash,
             confirmations: confirmation,
-            timestamp: time.timestamp
+            timestamp: time.timestamp,
           };
           resolve(ResponseData);
         } else {
@@ -297,7 +308,7 @@ function getTokenInfo(contractAddress) {
       ResponseData = {
         name: decimal[2],
         symbol: decimal[1],
-        decimals: decimal[0]
+        decimals: decimal[0],
       };
       resolve(ResponseData);
     } catch (e) {
@@ -306,14 +317,17 @@ function getTokenInfo(contractAddress) {
   });
 }
 
-router.get("/track/:wallet_address/:contract_address", async function (req, res) {
+router.get("/track/:wallet_address/:contract_address", async function (
+  req,
+  res
+) {
   var transactions = [];
   try {
     let tx = await axios.get(
       `https://api-ropsten.etherscan.io/api?module=account&action=tokentx&contractaddress=${req.params.contract_address}&address=${req.params.wallet_address}&sort=asc&apikey=R3NZBT5BV4WK3VER42TJ3B5UK4WYEDZENH`
     );
     console.log(tx.data.result);
-    tx.data.result.map(async itemApi => {
+    tx.data.result.map(async (itemApi) => {
       var unixtimestamp = itemApi.timeStamp;
       var date = new Date(unixtimestamp * 1000)
         .toISOString()
@@ -338,10 +352,9 @@ router.get("/track/:wallet_address/:contract_address", async function (req, res)
       };
 
       transactions.push(obj);
-
     });
     return res.status(200).json({
-      _data: transactions
+      _data: transactions,
     });
 
     // });
@@ -349,12 +362,12 @@ router.get("/track/:wallet_address/:contract_address", async function (req, res)
     let errors = {
       error: {
         code: 1,
-        message: `General error: ` + error
-      }
+        message: `General error: ` + error,
+      },
     };
     return res.status(500).json({
       meta: errors,
-      source: "offical"
+      source: "offical",
     });
     //  return res.status(500).json({ error: err.toString() });
   }
