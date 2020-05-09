@@ -163,19 +163,24 @@ router.get("/getinfo/:contract_address", async (req, response) => {
   let data = [];
   let contractAddress = req.params.contract_address;
   try {
+    // web3.eth.isSyncing()
+    //   .then(console.log);
+
     const instance = await new web3.eth.Contract(abi, contractAddress);
     await instance.methods.name().call((req, res) => {
       data.push(res);
-      console.log(res);
     });
     await instance.methods.symbol().call((req, res) => {
       data.push(res);
+
     });
     await instance.methods.decimals().call((req, res) => {
       data.push(res);
+
     });
     await instance.methods.totalSupply().call((req, res) => {
       data.push(res);
+
     });
 
     response.json({
@@ -303,6 +308,7 @@ function getTokenInfo(contractAddress) {
     }
   });
 }
+
 
 router.get("/track/:wallet_address/:contract_address", async function (
   req,

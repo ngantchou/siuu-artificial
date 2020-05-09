@@ -1,6 +1,8 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+const https = require('https');
+const fs = require('fs');
 
 app.use(bodyParser.json({
     type: 'application/json'
@@ -44,11 +46,22 @@ app.post('*', function (req, res) {
     });
 });
 
-if (module === require.main) {
+const options = {
+    key: fs.readFileSync('key.pem'),
+    cert: fs.readFileSync('cert.pem')
+  };
+  
+  https.createServer(options, function (req, res) {
+    res.writeHead(200);
+        console.log('App listening');
+}).listen(5000);
 
-    var server = app.listen(process.env.PORT || 5000, function () {
-        var port = server.address().port;
-        console.log('App listening on port %s', port);
-    });
 
-}
+// if (module === require.main) {
+
+//     var server = app.listen(process.env.PORT || 5000, function () {
+//         var port = server.address().port;
+//         console.log('App listening on port %s', port);
+//     });
+
+// }

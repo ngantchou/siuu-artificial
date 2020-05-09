@@ -243,6 +243,8 @@ function getTransaction(hash) {
         if (transaction !== undefined) {
           let inputdecode = await decoder.decodeData(transaction.input);
           console.log(inputdecode.inputs[1].toString());
+          console.log(inputdecode.inputs[0].toString());
+
           var confirmation =
             (await web3.eth.getBlockNumber()) - transaction.blockNumber;
           let time = await web3.eth.getBlock(transaction.blockNumber)
@@ -254,7 +256,7 @@ function getTransaction(hash) {
             symbol: info.symbol,
             decimal: info.decimals,
             from: transaction.from,
-            to: transaction.toAddress,
+            to: inputdecode.inputs[0].toString(),
             value: decimals,
             gas_price: transaction.gasPrice,
             hash: transaction.hash,
