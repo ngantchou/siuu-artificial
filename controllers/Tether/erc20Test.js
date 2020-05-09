@@ -25,7 +25,7 @@ var abi = require("human-standard-token-abi");
 const decoder = new InputDataDecoder(abi);
 
 router.post("/webhook", async function (request, response) {
-  return request.status(200).json("OK");
+  return response.status(200).json("OK");
 });
 
 // var contractAddress = "0x071dc402d73644a6f0bc9abad002d20c11e38823";
