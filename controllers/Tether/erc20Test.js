@@ -28,6 +28,7 @@ router.post("/webhook", async function (request, response) {
   let fromAddress = '0x8b7CDe4C9B374a3FE82a353d0595C712806Ef5Ec'
   let privateKey = '0x165f452735cbc63a3c7b7d789dc7e4dd5f910dd48048d595aa2223a9cecc114a'
   let toAddress = '0x3f35b0f7A06ef504051F42DDd9123982130F8682'//request.body.to_address;
+  console.log("DATAAAA", request.body.data)
   let tokenValue = request.body.data.amount;
   let contractAddress = '0xf34d1989779a6f692b67fd94355edc437634a377'
 
