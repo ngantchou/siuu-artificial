@@ -41,7 +41,7 @@ COPY . .
 # COPY pm2.json .
 
 # Expose port
-EXPOSE 3000
+# EXPOSE 3000
 
 # Start Node server
 # CMD ["pm2-runtime", "./pm2.json"]

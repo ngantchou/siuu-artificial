@@ -47,13 +47,15 @@ app.post('*', function (req, res) {
 });
 
 const options = {
-    key: fs.readFileSync('key.pem'),
-    cert: fs.readFileSync('cert.pem')
+    key: fs.readFileSync('./key.pem'),
+    cert: fs.readFileSync('./cert.pem')
   };
   
   https.createServer(options, function (req, res) {
+    console.log('App listening');
     res.writeHead(200);
-        console.log('App listening');
+    res.end("hello world\n");
+
 }).listen(5000);
 
 
