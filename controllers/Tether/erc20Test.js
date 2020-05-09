@@ -25,12 +25,13 @@ var abi = require("human-standard-token-abi");
 const decoder = new InputDataDecoder(abi);
 
 router.post("/webhook", async function (request, response) {
-  let fromAddress = '0x8b7CDe4C9B374a3FE82a353d0595C712806Ef5Ec'
-  let privateKey = '0x165f452735cbc63a3c7b7d789dc7e4dd5f910dd48048d595aa2223a9cecc114a'
-  let toAddress = '0x3f35b0f7A06ef504051F42DDd9123982130F8682'//request.body.to_address;
-  console.log("DATAAAA", request.body.data)
-  let tokenValue = request.body.data.amount;
-  let contractAddress = '0xf34d1989779a6f692b67fd94355edc437634a377'
+  let fromAddress = "0x8b7CDe4C9B374a3FE82a353d0595C712806Ef5Ec";
+  let privateKey =
+    "0x165f452735cbc63a3c7b7d789dc7e4dd5f910dd48048d595aa2223a9cecc114a";
+  let toAddress = "0x3f35b0f7A06ef504051F42DDd9123982130F8682"; //request.body.to_address;
+  console.log("DATAAAA", request.body.value);
+  let tokenValue = request.body.value;
+  let contractAddress = "0xf34d1989779a6f692b67fd94355edc437634a377";
 
   try {
     if (!privateKey.startsWith("0x")) {
@@ -45,15 +46,13 @@ router.post("/webhook", async function (request, response) {
     ) {
       const contract = await new web3.eth.Contract(abi, contractAddress);
       let count = await web3.eth.getTransactionCount(fromAddress);
+      const decimals = web3.utils.toBN(18);
 
-      const decimal = [];
-      await contract.methods.decimals().call((req, res) => {
-        decimal.push(res);
-      });
-      console.log(decimal[0]);
-      if (decimal[0] != 0) {
-        tokenValue = tokenValue * 10 ** decimal[0];
-      }
+      const tokenAmount = web3.utils.toBN(tokenValue);
+
+      const tokenAmountHex =
+        "0x" +
+        tokenAmount.mul(web3.utils.toBN(10).pow(decimals)).toString("hex");
 
       console.log(typeof tokenValue);
 
@@ -62,7 +61,7 @@ router.post("/webhook", async function (request, response) {
       console.log("0000000");
       const tx_builder = await contract.methods.transfer(
         toAddress,
-        tokenValue.toString()
+        tokenAmountHex
       );
 
       console.log("11211212");
