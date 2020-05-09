@@ -15,4 +15,4 @@ docker build -t erc-services-image:latest .
 
 
 echo "Running docker image for erc...."
-docker run -d --name erc-service --restart=always -p 5000:443 -e NODE_ENV=production erc-services-image:latest
+docker run -d --name erc-service --restart=always -p 5000:5000 -e NODE_ENV=production erc-services-image:latest
