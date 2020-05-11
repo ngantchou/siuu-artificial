@@ -4,6 +4,9 @@ var bodyParser = require("body-parser");
 const https = require("https");
 const fs = require("fs");
 
+var erc20Test = require("./controllers/Tether/erc20Test");
+app.use("/api/token/testnet", erc20Test);
+
 app.use(
   bodyParser.json({
     type: "application/json",
@@ -15,30 +18,12 @@ app.use(
   })
 );
 
-//middleware
-app.use((req, res, next) => {
-  var data_stream = "";
-
-  // Readable streams emit 'data' events once a listener is added
-  req
-    .setEncoding("utf-8")
-    .on("data", function (data) {
-      data_stream += data;
-    })
-    .on("end", function () {
-      req.rawBody;
-      req.rawBody = data_stream;
-      next();
-    });
-});
-
-var erc20Main = require("./controllers/Tether/erc20Main");
-var erc20Test = require("./controllers/Tether/erc20Test");
 var ethMain = require("./controllers/Ethereum/ethMain");
 var ethTest = require("./controllers/Ethereum/ethTest");
+var erc20Main = require("./controllers/Tether/erc20Main");
+
 
 app.use("/api/token/mainnet", erc20Main);
-app.use("/api/token/testnet", erc20Test);
 app.use("/api/ether/mainnet", ethMain);
 app.use("/api/ether/testnet", ethTest);
 

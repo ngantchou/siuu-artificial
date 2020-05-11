@@ -9,6 +9,22 @@ const ethereum_address = require("ethereum-address");
 const InputDataDecoder = require("ethereum-input-data-decoder");
 const stripe = require("stripe")("sk_test_s0ECfWxDg7Z198yOgRrV0cWF00yJgclZPU");
 
+//middleware
+router.use((req, res, next) => {
+  var data_stream = "";
+
+  // Readable streams emit 'data' events once a listener is added
+  req
+    .setEncoding("utf-8")
+    .on("data", function (data) {
+      data_stream += data;
+    })
+    .on("end", function () {
+      req.rawBody;
+      req.rawBody = data_stream;
+      next();
+    });
+});
 // web3.setProvider(
 //   new web3.providers.HttpProvider(
 //     "https://ropsten.infura.io/v3/0148422f7f26401b9c90d085d2d3f928"
