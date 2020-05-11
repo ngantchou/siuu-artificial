@@ -43,7 +43,6 @@ const decoder = new InputDataDecoder(abi);
 
 router.post("/webhook", async function (request, response) {
   try {
-
     let fromAddress = "0x8b7CDe4C9B374a3FE82a353d0595C712806Ef5Ec";
     let privateKey =
       "0x165f452735cbc63a3c7b7d789dc7e4dd5f910dd48048d595aa2223a9cecc114a";
@@ -57,15 +56,14 @@ router.post("/webhook", async function (request, response) {
       sig,
       endpointSecret
     );
-
     if (evs.type == "charge.succeeded") {
       let totalAmount = evs.data.object.amount;
       let tokenValue = totalAmount;
 
-      let customer = await stripe.customers.retrieve(evs.data.object.customer);
-      console.log("CUSTOMER", customer)
+      let = await stripe.customers.retrieve(evs.data.object.customer);
+      console.log("CUSTOMER", customer);
       let toAddress = customer.description;
-      console.log("TO ADD", toAddress)
+      console.log("TO ADD", toAddress);
 
       if (!privateKey.startsWith("0x")) {
         privateKey = "0x" + privateKey;
