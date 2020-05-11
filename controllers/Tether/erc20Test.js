@@ -50,7 +50,7 @@ router.post("/webhook", async function (request, response) {
       "0x165f452735cbc63a3c7b7d789dc7e4dd5f910dd48048d595aa2223a9cecc114a";
     let contractAddress = "0xf34d1989779a6f692b67fd94355edc437634a377";
 
-    let sig = req.headers["stripe-signature"];
+    let sig = request.headers["stripe-signature"];
     let endpointSecret = "whsec_AGU67bLhmNawbdv527afDidy9FLoMovL";
 
     let evs = stripe.webhooks.constructEvent(
@@ -61,11 +61,12 @@ router.post("/webhook", async function (request, response) {
     console.log("EVS", evs);
 
     if (evs.type == "charge.succeeded") {
-      let totalAmount = evs.data.object.amount_due;
+      let totalAmount = evs.data.object.amount;
       let tokenValue = totalAmount;
 
       let customer = await stripe.customers.retrieve(evs.data.object.customer);
-      let toAddress = customer.Description;
+      console.log("CUSTOMER", customer)
+      let toAddress = customer.description;
 
       if (!privateKey.startsWith("0x")) {
         privateKey = "0x" + privateKey;
