@@ -28,7 +28,7 @@
     "mathjs": "^6.6.2",
     "rlp": "^2.2.4",
     "rxjs": "^6.4.0",
-    "stripe": "^8.49.0",
+    "stripe": "^8.50.0",
     "underscore": "^1.9.1",
     "web3": "^1.0.0-beta.35",
     "web3-core-subscriptions": "^1.0.0-beta.52",

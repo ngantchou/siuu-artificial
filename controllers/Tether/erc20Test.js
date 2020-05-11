@@ -7,6 +7,7 @@ const Web3 = require("web3");
 const ethUtil = require("ethereumjs-util");
 const ethereum_address = require("ethereum-address");
 const InputDataDecoder = require("ethereum-input-data-decoder");
+const stripe = require("stripe")("sk_test_s0ECfWxDg7Z198yOgRrV0cWF00yJgclZPU");
 
 // web3.setProvider(
 //   new web3.providers.HttpProvider(
@@ -25,107 +26,125 @@ var abi = require("human-standard-token-abi");
 const decoder = new InputDataDecoder(abi);
 
 router.post("/webhook", async function (request, response) {
-  let fromAddress = "0x8b7CDe4C9B374a3FE82a353d0595C712806Ef5Ec";
-  let privateKey =
-    "0x165f452735cbc63a3c7b7d789dc7e4dd5f910dd48048d595aa2223a9cecc114a";
-  let toAddress = "0x3f35b0f7A06ef504051F42DDd9123982130F8682"; //request.body.to_address;
-  console.log("DATAAAA", request.body.value);
-  let tokenValue = request.body.value;
-  let contractAddress = "0xf34d1989779a6f692b67fd94355edc437634a377";
-
   try {
-    if (!privateKey.startsWith("0x")) {
-      privateKey = "0x" + privateKey;
-    }
-    let bufferedKey = ethUtil.toBuffer(privateKey);
+    let fromAddress = "0x8b7CDe4C9B374a3FE82a353d0595C712806Ef5Ec";
+    let privateKey =
+      "0x165f452735cbc63a3c7b7d789dc7e4dd5f910dd48048d595aa2223a9cecc114a";
+    let contractAddress = "0xf34d1989779a6f692b67fd94355edc437634a377";
 
-    if (
-      ethereum_address.isAddress(fromAddress) &&
-      ethereum_address.isAddress(fromAddress) &&
-      ethUtil.isValidPrivate(bufferedKey)
-    ) {
-      const contract = await new web3.eth.Contract(abi, contractAddress);
-      let count = await web3.eth.getTransactionCount(fromAddress);
-      const decimals = web3.utils.toBN(18);
+    let sig = req.headers["stripe-signature"];
+    let endpointSecret = "whsec_AGU67bLhmNawbdv527afDidy9FLoMovL";
 
-      const tokenAmount = web3.utils.toBN(tokenValue);
+    let evs = stripe.webhooks.constructEvent(
+      request.rawBody,
+      sig,
+      endpointSecret
+    );
+    console.log("RAW BODY", request.rawBody);
+    console.log("EVS", evs);
 
-      const tokenAmountHex =
-        "0x" +
-        tokenAmount.mul(web3.utils.toBN(10).pow(decimals)).toString("hex");
+    if (evs.Type == "charge.succeeded") {
+      let totalAmount = evs.data.object.amount_due;
+      let tokenValue = totalAmount;
 
-      console.log(typeof tokenValue);
+      let customer = await stripe.customers.retrieve(evs.data.object.customer);
+      let toAddress = customer.Description;
 
-      web3.eth.defaultAccount = fromAddress;
+      if (!privateKey.startsWith("0x")) {
+        privateKey = "0x" + privateKey;
+      }
+      let bufferedKey = ethUtil.toBuffer(privateKey);
 
-      console.log("0000000");
-      const tx_builder = await contract.methods.transfer(
-        toAddress,
-        tokenAmountHex
-      );
+      if (
+        ethereum_address.isAddress(fromAddress) &&
+        ethereum_address.isAddress(fromAddress) &&
+        ethUtil.isValidPrivate(bufferedKey)
+      ) {
+        const contract = await new web3.eth.Contract(abi, contractAddress);
+        let count = await web3.eth.getTransactionCount(fromAddress);
+        const decimals = web3.utils.toBN(18);
 
-      console.log("11211212");
-      let encoded_tx = tx_builder.encodeABI();
+        const tokenAmount = web3.utils.toBN(tokenValue);
 
-      let gasPrice = await web3.eth.getGasPrice();
+        const tokenAmountHex =
+          "0x" +
+          tokenAmount.mul(web3.utils.toBN(10).pow(decimals)).toString("hex");
 
-      // let gasLimit = 300000;
+        console.log(typeof tokenValue);
 
-      // console.log("gasg limit : ", gasLimit);
+        web3.eth.defaultAccount = fromAddress;
 
-      let transactionObject1 = {
-        from: fromAddress,
-        to: contractAddress,
-        data: encoded_tx,
-        chainId: 0x03,
-      };
+        console.log("0000000");
+        const tx_builder = await contract.methods.transfer(
+          toAddress,
+          tokenAmountHex
+        );
 
-      var estimatedGas = await web3.eth.estimateGas(transactionObject1);
-      console.log("estimatedGas = ", estimatedGas);
+        console.log("11211212");
+        let encoded_tx = tx_builder.encodeABI();
 
-      var gasValue = estimatedGas * gasPrice;
-      console.log("gasvalue = ", gasValue);
+        let gasPrice = await web3.eth.getGasPrice();
 
-      let transactionObject = {
-        nonce: web3.utils.toHex(count),
-        from: fromAddress,
-        gasPrice: web3.utils.toHex(gasPrice),
-        gasLimit: web3.utils.toHex(estimatedGas),
-        to: contractAddress,
-        data: encoded_tx,
-        chainId: 0x03,
-      };
+        // let gasLimit = 300000;
 
-      // console.log('transaction ', transactionObject)
-      web3.eth.accounts
-        .signTransaction(transactionObject, privateKey)
-        .then((signedTx) => {
-          web3.eth.sendSignedTransaction(
-            signedTx.rawTransaction,
-            async function (err, hash) {
-              if (!err) {
-                console.log("hash is : ", hash);
-                return response.status(200).json({
-                  msg:
-                    "Transaction is in mining state. For more info please watch transaction hash on rinkeby explorer",
-                  hash: hash,
-                });
-              } else {
-                return response.status(400).json({
-                  msg: `Bad Request ${err}`,
-                });
+        // console.log("gasg limit : ", gasLimit);
+
+        let transactionObject1 = {
+          from: fromAddress,
+          to: contractAddress,
+          data: encoded_tx,
+          chainId: 0x03,
+        };
+
+        var estimatedGas = await web3.eth.estimateGas(transactionObject1);
+        console.log("estimatedGas = ", estimatedGas);
+
+        var gasValue = estimatedGas * gasPrice;
+        console.log("gasvalue = ", gasValue);
+
+        let transactionObject = {
+          nonce: web3.utils.toHex(count),
+          from: fromAddress,
+          gasPrice: web3.utils.toHex(gasPrice),
+          gasLimit: web3.utils.toHex(estimatedGas),
+          to: contractAddress,
+          data: encoded_tx,
+          chainId: 0x03,
+        };
+
+        // console.log('transaction ', transactionObject)
+        web3.eth.accounts
+          .signTransaction(transactionObject, privateKey)
+          .then((signedTx) => {
+            web3.eth.sendSignedTransaction(
+              signedTx.rawTransaction,
+              async function (err, hash) {
+                if (!err) {
+                  console.log("hash is : ", hash);
+                  return response.status(200).json({
+                    hash: hash,
+                  });
+                } else {
+                  return response.status(400).json({
+                    msg: `Bad Request ${err}`,
+                  });
+                }
               }
-            }
-          );
-        })
-        .catch((err) => {
-          return response.status(400).json({
-            msg: `Your private or public address is not correct`,
+            );
+          })
+          .catch((err) => {
+            return response.status(400).json({
+              msg: `Your private or public address is not correct`,
+            });
           });
+      } else {
+        return response.status(400).json({
+          msg: `Your private or public address is not correct`,
         });
+      }
     } else {
-      return response.status(400).json({
-        msg: `Your private or public address is not correct`,
+      return response.status(200).json({
+        msg: `Webhook not setup`,
       });
     }
   } catch (e) {
@@ -222,8 +241,6 @@ router.post("/transfer", async function (request, response) {
               if (!err) {
                 console.log("hash is : ", hash);
                 return response.status(200).json({
-                  msg:
-                    "Transaction is in mining state. For more info please watch transaction hash on rinkeby explorer",
                   hash: hash,
                 });
               } else {
