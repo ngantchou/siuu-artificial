@@ -27,7 +27,7 @@ const decoder = new InputDataDecoder(abi);
 
 router.post("/webhook", async function (request, response) {
   try {
-    console.log("RAW BODY", request.body);
+    console.log("RAW BODY", request.rawBody);
 
     let fromAddress = "0x8b7CDe4C9B374a3FE82a353d0595C712806Ef5Ec";
     let privateKey =
@@ -38,7 +38,7 @@ router.post("/webhook", async function (request, response) {
     let endpointSecret = "whsec_AGU67bLhmNawbdv527afDidy9FLoMovL";
 
     let evs = stripe.webhooks.constructEvent(
-      request.body,
+      request.rawBody,
       sig,
       endpointSecret
     );
