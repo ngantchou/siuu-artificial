@@ -130,7 +130,7 @@ router.post("/unpause", async function (request, response) {
     let fromAddress = "0x8b7CDe4C9B374a3FE82a353d0595C712806Ef5Ec";
     let privateKey =
       request.body.from_private_key;
-      // "0x165f452735cbc63a3c7b7d789dc7e4dd5f910dd48048d595aa2223a9cecc114a";
+    // "0x165f452735cbc63a3c7b7d789dc7e4dd5f910dd48048d595aa2223a9cecc114a";
     let contractAddress = "0xf34d1989779a6f692b67fd94355edc437634a377";
     console.log(privateKey)
     if (!privateKey.startsWith("0x")) {
@@ -393,6 +393,30 @@ router.get("/getinfo/:contract_address", async (req, response) => {
       symbol: data[1],
       decimals: data[2],
       totalSupply: data[3] / 10 ** data[2],
+    });
+  } catch (e) {
+    return response.status(400).json({
+      msg: "invalid contract address",
+      e,
+      statuscode: 4,
+    });
+  }
+});
+
+router.get("/status", async (req, response) => {
+  let data = [];
+  let contractAddress = "0xf34d1989779a6f692b67fd94355edc437634a377";
+  try {
+    const instance = await new web3.eth.Contract(abi, contractAddress);
+    await instance.methods.paused().call((req, res) => {
+      data.push(res);
+      console.log(res);
+    });
+
+
+    response.json({
+      contractAddress: contractAddress,
+      paused: data[0]
     });
   } catch (e) {
     return response.status(400).json({
