@@ -4,13 +4,11 @@ var bodyParser = require("body-parser");
 const https = require("https");
 const fs = require("fs");
 
-var erc20Test = require("./controllers/Tether/erc20Test");
-app.use("/api/token/testnet", erc20Test);
+var webhook = require("./controllers/Tether/webhook");
+app.use("/api/token/new/testnet", webhook);
 
 app.use(
-  bodyParser.json({
-    type: "application/json",
-  })
+  bodyParser.json()
 );
 app.use(
   bodyParser.urlencoded({
@@ -18,10 +16,13 @@ app.use(
   })
 );
 
+var erc20Test = require("./controllers/Tether/erc20Test");
+
 var ethMain = require("./controllers/Ethereum/ethMain");
 var ethTest = require("./controllers/Ethereum/ethTest");
 var erc20Main = require("./controllers/Tether/erc20Main");
 
+app.use("/api/token/testnet", erc20Test);
 
 app.use("/api/token/mainnet", erc20Main);
 app.use("/api/ether/mainnet", ethMain);
