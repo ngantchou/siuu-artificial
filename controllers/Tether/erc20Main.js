@@ -47,9 +47,16 @@ router.post("/transfer", async function (request, response) {
         decimal.push(res);
       });
       console.log(decimal[0]);
-      if (decimal[0] != 0) {
-        tokenValue = tokenValue * 10 ** decimal[0];
-      }
+      const decimals = web3.utils.toBN(decimal[0]);
+
+      const tokenAmount = web3.utils.toBN(tokenValue);
+
+      const tokenAmountHex =
+        "0x" +
+        tokenAmount.mul(web3.utils.toBN(10).pow(decimals)).toString("hex");
+
+      console.log(typeof tokenValue);
+
 
       console.log(typeof tokenValue);
 
@@ -58,7 +65,7 @@ router.post("/transfer", async function (request, response) {
       console.log("0000000");
       const tx_builder = await contract.methods.transfer(
         toAddress,
-        tokenValue.toString()
+        tokenAmountHex
       );
 
       console.log("11211212");
