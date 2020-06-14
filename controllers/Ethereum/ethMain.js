@@ -199,21 +199,28 @@ router.get("/track/:wallet_address", async (req, res) => {
 router.get("/fetchtx/:hash", async (req, res) => {
   try {
     const reciept = await web3.eth.getTransaction(req.params.hash);
+    let transaction2 = await web3.eth.getTransactionReceipt(req.params.hash);
+
     if (reciept == null) {
-      return res.status(400).json({
+      return res.status(200).json({
         msg: "Transaction is in mining state. For more info please watch transaction hash on etherscan explorer",
         hash: req.params.hash,
         statuscode: 2
       });
-    } else if (reciept.status == false) {
-      return res.status(400).json({
+    } else if (transaction2.status === false) {
+      return res.status(200).json({
         reciept: reciept,
-        statuscode: 0
+        statuscode: 0,
+        message: "transaction failed",
+        status: "failed"
+
       });
-    } else if (reciept.status == undefined) {
-      return res.status(400).json({
+    } else if (transaction2.status == true) {
+      return res.status(200).json({
         reciept: reciept,
-        statuscode: 3
+        statuscode: 1,
+        message: "transaction success",
+        status: "success"
       });
     } else {
       return res.status(200).json({
@@ -222,7 +229,7 @@ router.get("/fetchtx/:hash", async (req, res) => {
       });
     }
   } catch (e) {
-    return res.status(400).json({
+    return res.status(200).json({
       msg: "invalid transaction reciept",
       e,
       statuscode: 4
