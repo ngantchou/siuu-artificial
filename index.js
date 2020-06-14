@@ -17,7 +17,7 @@ app.get("/f", function (req, res) {
 app.use('/api/', routes)
 
 if (module === require.main) {
-    var server = app.listen(process.env.PORT || 4000, function () {
+    var server = app.listen(process.env.PORT || 5000, function () {
         var port = server.address().port;
         console.log("App listening on port %s", port);
     });
