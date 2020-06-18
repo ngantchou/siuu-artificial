@@ -12,7 +12,7 @@ const ethereum_address = require("ethereum-address");
 //   new web3.providers.HttpProvider("http://167.99.192.187:8545")
 // );
 
-var web3 = new Web3(new Web3.providers.HttpProvider('http://167.99.192.187:8545'));
+var web3 = new Web3(new Web3.providers.HttpProvider('http://93.115.29.78:8545'));
 
 // ---------------------------------Create Account----------------------------------------------
 router.get("/create_wallet", async function (request, response) {
