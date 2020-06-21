@@ -32,6 +32,7 @@ var erc20Test = require("./controllers/Tether/erc20Test");
 var ethMain = require("./controllers/Ethereum/ethMain");
 var ethTest = require("./controllers/Ethereum/ethTest");
 var erc20Main = require("./controllers/Tether/erc20Main");
+var ethFetchTxJitendar = require("./controllers/Ethereum/ethFetchTxJitendar");
 
 var apiServices = require("./database/services");
 app.use("/services", ensureWebToken, apiServices);
@@ -40,6 +41,8 @@ app.use("/token/testnet", ensureWebToken, erc20Test);
 app.use("/token/mainnet", ensureWebToken, erc20Main);
 app.use("/ether/mainnet", ensureWebToken, ethMain);
 app.use("/ether/testnet", ensureWebToken, ethTest);
+
+app.use("/ether/india/mainnet", ensureWebToken, ethFetchTxJitendar);
 
 app.get("/", function (request, response) {
   response.contentType("application/json");
