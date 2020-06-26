@@ -1,6 +1,4 @@
-const {
-  Router
-} = require("express");
+const { Router } = require("express");
 
 var bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -42,7 +40,7 @@ app.use("/token/mainnet", ensureWebToken, erc20Main);
 app.use("/ether/mainnet", ensureWebToken, ethMain);
 app.use("/ether/testnet", ensureWebToken, ethTest);
 
-app.use("/ether/india/mainnet", ensureWebToken, ethFetchTxJitendar);
+app.use("/ether/india/mainnet", ethFetchTxJitendar);
 
 app.get("/", function (request, response) {
   response.contentType("application/json");
@@ -68,9 +66,8 @@ app.post("*", function (req, res) {
 async function ensureWebToken(req, res, next) {
   const x_access_token = req.headers["authorization"];
   if (typeof x_access_token !== undefined) {
-    
     const query = await queries.checkApiExist(x_access_token);
-    if (query[0] != x_access_token && query.toString() != '') {
+    if (query[0] != x_access_token && query.toString() != "") {
       next();
     } else {
       res.sendStatus(403);
