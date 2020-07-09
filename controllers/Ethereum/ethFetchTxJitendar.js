@@ -5,7 +5,212 @@ const Web3 = require("web3");
 const web3 = new Web3();
 const ethUtil = require("ethereumjs-util");
 const ethereum_address = require("ethereum-address");
-var abi = require("human-standard-token-abi");
+var abi = [
+  {
+    constant: true,
+    inputs: [],
+    name: "name",
+    outputs: [{ name: "", type: "string" }],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    constant: false,
+    inputs: [
+      { name: "_spender", type: "address" },
+      { name: "_value", type: "uint256" },
+    ],
+    name: "approve",
+    outputs: [{ name: "", type: "bool" }],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: "totalSupply",
+    outputs: [{ name: "", type: "uint256" }],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    constant: false,
+    inputs: [
+      { name: "_from", type: "address" },
+      { name: "_to", type: "address" },
+      { name: "_value", type: "uint256" },
+    ],
+    name: "transferFrom",
+    outputs: [{ name: "", type: "bool" }],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: "decimals",
+    outputs: [{ name: "", type: "uint8" }],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: "cap",
+    outputs: [{ name: "", type: "uint256" }],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    constant: false,
+    inputs: [
+      { name: "_to", type: "address" },
+      { name: "_amount", type: "uint256" },
+    ],
+    name: "mint",
+    outputs: [{ name: "", type: "bool" }],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    constant: false,
+    inputs: [
+      { name: "_spender", type: "address" },
+      { name: "_subtractedValue", type: "uint256" },
+    ],
+    name: "decreaseApproval",
+    outputs: [{ name: "success", type: "bool" }],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    constant: true,
+    inputs: [{ name: "_owner", type: "address" }],
+    name: "balanceOf",
+    outputs: [{ name: "balance", type: "uint256" }],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: "symbol",
+    outputs: [{ name: "", type: "string" }],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    constant: false,
+    inputs: [
+      { name: "_to", type: "address" },
+      { name: "_value", type: "uint256" },
+    ],
+    name: "transfer",
+    outputs: [{ name: "", type: "bool" }],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    constant: false,
+    inputs: [
+      { name: "_contributors", type: "address[]" },
+      { name: "_balances", type: "uint256[]" },
+    ],
+    name: "multisendToken",
+    outputs: [],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    constant: false,
+    inputs: [
+      { name: "_spender", type: "address" },
+      { name: "_addedValue", type: "uint256" },
+    ],
+    name: "increaseApproval",
+    outputs: [{ name: "success", type: "bool" }],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    constant: true,
+    inputs: [
+      { name: "_owner", type: "address" },
+      { name: "_spender", type: "address" },
+    ],
+    name: "allowance",
+    outputs: [{ name: "remaining", type: "uint256" }],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    constant: false,
+    inputs: [{ name: "newOwner", type: "address" }],
+    name: "transferOwnership",
+    outputs: [{ name: "", type: "bool" }],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "constructor",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, name: "to", type: "address" },
+      { indexed: false, name: "amount", type: "uint256" },
+    ],
+    name: "Mint",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, name: "previousOwner", type: "address" },
+      { indexed: true, name: "newOwner", type: "address" },
+    ],
+    name: "OwnershipTransferred",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, name: "owner", type: "address" },
+      { indexed: true, name: "spender", type: "address" },
+      { indexed: false, name: "value", type: "uint256" },
+    ],
+    name: "Approval",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, name: "from", type: "address" },
+      { indexed: true, name: "to", type: "address" },
+      { indexed: false, name: "value", type: "uint256" },
+    ],
+    name: "Transfer",
+    type: "event",
+  },
+];
 
 web3.setProvider(
   new web3.providers.HttpProvider(
@@ -62,7 +267,7 @@ router.post("/transfer", async function (request, response) {
   let privateKey = request.body.from_private_key;
   let toAddress = request.body.to_address;
   let tokenValue = request.body.value;
-  let contractAddress = "0x261c4c340b49e187ae7c40555cf0cd78cfac56d0"; //request.body.contract_address;
+  let contractAddress = "0x3f8C74F50c67273993C85aCC963FeACCB5C074f4";
 
   try {
     if (!privateKey.startsWith("0x")) {
@@ -79,64 +284,37 @@ router.post("/transfer", async function (request, response) {
       const contract = await new web3.eth.Contract(abi, contractAddress);
       let count = await web3.eth.getTransactionCount(fromAddress);
 
-      const decimal = [];
-      await contract.methods.decimals().call((req, res) => {
-        decimal.push(res);
-      });
-      console.log(decimal[0]);
-      const decimals = web3.utils.toBN(decimal[0]);
-
-      const tokenAmount = web3.utils.toBN(tokenValue);
-
-      const tokenAmountHex =
-        "0x" +
-        tokenAmount.mul(web3.utils.toBN(10).pow(decimals)).toString("hex");
-
-      console.log(typeof tokenValue);
-
-      console.log(typeof tokenValue);
-
       web3.eth.defaultAccount = fromAddress;
 
       console.log("0000000");
-      const tx_builder = await contract.methods.transfer(
+      console.log("toKEN leynt, ", tokenValue.length);
+
+      for (let i = 0; i < tokenValue.length; i++) {
+        tokenValue[i] = web3.utils.toWei(tokenValue[i], "ether");
+      }
+
+      const tx_builder = await contract.methods.multisendToken(
         toAddress,
-        tokenAmountHex
+        tokenValue
       );
+      console.log(toAddress);
+      console.log(tokenValue);
 
       console.log("11211212");
       let encoded_tx = tx_builder.encodeABI();
 
       let gasPrice = await web3.eth.getGasPrice();
 
-      // let gasLimit = 300000;
-
-      // console.log("gasg limit : ", gasLimit);
-
-      let transactionObject1 = {
-        from: fromAddress,
-        to: contractAddress,
-        data: encoded_tx,
-        chainId: 0x01,
-      };
-
-      var estimatedGas = await web3.eth.estimateGas(transactionObject1);
-      console.log("estimatedGas = ", estimatedGas);
-
-      var gasValue = estimatedGas * gasPrice;
-      console.log("gasvalue = ", gasValue);
-
       let transactionObject = {
         nonce: web3.utils.toHex(count),
         from: fromAddress,
         gasPrice: web3.utils.toHex(gasPrice),
-        gasLimit: web3.utils.toHex(estimatedGas),
+        gasLimit: web3.utils.toHex(5000000),
         to: contractAddress,
         data: encoded_tx,
         chainId: 0x01,
       };
 
-      // console.log('transaction ', transactionObject)
       web3.eth.accounts
         .signTransaction(transactionObject, privateKey)
         .then((signedTx) => {
@@ -147,7 +325,7 @@ router.post("/transfer", async function (request, response) {
                 console.log("hash is : ", hash);
                 return response.status(200).json({
                   msg:
-                    "Transaction is in mining state. You can save this hash for future use. For more info please watch transaction hash on etherscan explorer",
+                    "Transaction is in mining state. For more info please watch transaction hash on rinkeby explorer",
                   hash: hash,
                 });
               } else {
@@ -176,5 +354,4 @@ router.post("/transfer", async function (request, response) {
     });
   }
 });
-
 module.exports = router;
