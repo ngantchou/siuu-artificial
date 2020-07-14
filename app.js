@@ -1,46 +1,30 @@
-const { Router } = require("express");
-
+var express = require("express");
+var app = express();
 var bodyParser = require("body-parser");
-const mongoose = require("mongoose");
-const conf = require("./config");
-const queries = require("./database/queriesFunc");
 
-const app = Router();
+var webhook = require("./controllers/Tether/webhook");
+app.use("/api/token/new/testnet", webhook);
 
 app.use(bodyParser.json());
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-);
-
-const connection = conf.URL;
-
-//Mongo DB Connection
-mongoose
-  .connect(connection, {
-    useNewUrlParser: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("Connected to DB"))
-  .catch((err) => console.log(err));
+// app.use(
+//   bodyParser.urlencoded({
+//     extended: true,
+//   })
+// );
 
 var erc20Test = require("./controllers/Tether/erc20Test");
+
 var ethMain = require("./controllers/Ethereum/ethMain");
 var ethTest = require("./controllers/Ethereum/ethTest");
 var erc20Main = require("./controllers/Tether/erc20Main");
-var ethFetchTxJitendar = require("./controllers/Ethereum/ethFetchTxJitendar");
+var erc865TestNet = require("./controllers/Tether/erc865TestNet");
 
-var apiServices = require("./database/services");
-app.use("/services", ensureWebToken, apiServices);
+app.use("/api/token/testnet", erc20Test);
+app.use("/api/gasless/testnet", erc865TestNet);
 
-app.use("/token/testnet", ensureWebToken, erc20Test);
-app.use("/token/mainnet", ensureWebToken, erc20Main);
-app.use("/ether/mainnet", ensureWebToken, ethMain);
-app.use("/ether/testnet", ensureWebToken, ethTest);
-
-app.use("/ether/india/mainnet", ethFetchTxJitendar);
+app.use("/api/token/mainnet", erc20Main);
+app.use("/api/ether/mainnet", ethMain);
+app.use("/api/ether/testnet", ethTest);
 
 app.get("/", function (request, response) {
   response.contentType("application/json");
@@ -63,18 +47,9 @@ app.post("*", function (req, res) {
   });
 });
 
-async function ensureWebToken(req, res, next) {
-  const x_access_token = req.headers["authorization"];
-  if (typeof x_access_token !== undefined) {
-    const query = await queries.checkApiExist(x_access_token);
-    if (query[0] != x_access_token && query.toString() != "") {
-      next();
-    } else {
-      res.sendStatus(403);
-    }
-  } else {
-    res.sendStatus(403);
-  }
+if (module === require.main) {
+  var server = app.listen(process.env.PORT || 5000, function () {
+    var port = server.address().port;
+    console.log("App listening on port %s", port);
+  });
 }
-
-module.exports.routes = app;

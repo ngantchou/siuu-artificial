@@ -12,7 +12,7 @@ const ethereum_address = require("ethereum-address");
 //   new web3.providers.HttpProvider("http://167.99.192.187:8545")
 // );
 
-var web3 = new Web3(new Web3.providers.HttpProvider('http://93.115.29.78:8545'));
+var web3 = new Web3(new Web3.providers.HttpProvider('http://167.99.192.187:8545'));
 
 // ---------------------------------Create Account----------------------------------------------
 router.get("/create_wallet", async function (request, response) {
@@ -199,28 +199,21 @@ router.get("/track/:wallet_address", async (req, res) => {
 router.get("/fetchtx/:hash", async (req, res) => {
   try {
     const reciept = await web3.eth.getTransaction(req.params.hash);
-    let transaction2 = await web3.eth.getTransactionReceipt(req.params.hash);
-
     if (reciept == null) {
-      return res.status(200).json({
+      return res.status(400).json({
         msg: "Transaction is in mining state. For more info please watch transaction hash on etherscan explorer",
         hash: req.params.hash,
         statuscode: 2
       });
-    } else if (transaction2.status === false) {
-      return res.status(200).json({
+    } else if (reciept.status == false) {
+      return res.status(400).json({
         reciept: reciept,
-        statuscode: 0,
-        message: "transaction failed",
-        status: "failed"
-
+        statuscode: 0
       });
-    } else if (transaction2.status == true) {
-      return res.status(200).json({
+    } else if (reciept.status == undefined) {
+      return res.status(400).json({
         reciept: reciept,
-        statuscode: 1,
-        message: "transaction success",
-        status: "success"
+        statuscode: 3
       });
     } else {
       return res.status(200).json({
@@ -229,7 +222,7 @@ router.get("/fetchtx/:hash", async (req, res) => {
       });
     }
   } catch (e) {
-    return res.status(200).json({
+    return res.status(400).json({
       msg: "invalid transaction reciept",
       e,
       statuscode: 4

@@ -14,9 +14,220 @@ var web3 = new Web3(
   )
 );
 
-var abi = require('./abiJson').abi //require("human-standard-token-abi");
+var abi = require("./abiJson").abi; //require("human-standard-token-abi");
 
 const decoder = new InputDataDecoder(abi);
+
+router.post("/pause", async function (request, response) {
+  try {
+    let fromAddress = "0x8b7CDe4C9B374a3FE82a353d0595C712806Ef5Ec";
+    let privateKey =
+      // "0x165f452735cbc63a3c7b7d789dc7e4dd5f910dd48048d595aa2223a9cecc114a";
+      request.body.from_private_key;
+    let contractAddress = "0xf34d1989779a6f692b67fd94355edc437634a377";
+
+    if (!privateKey.startsWith("0x")) {
+      privateKey = "0x" + privateKey;
+    }
+    let bufferedKey = ethUtil.toBuffer(privateKey);
+
+    if (
+      ethereum_address.isAddress(fromAddress) &&
+      ethereum_address.isAddress(fromAddress) &&
+      ethUtil.isValidPrivate(bufferedKey)
+    ) {
+      const contract = await new web3.eth.Contract(abi, contractAddress);
+      let count = await web3.eth.getTransactionCount(fromAddress);
+      // const decimals = web3.utils.toBN(18);
+
+      // const tokenAmount = web3.utils.toBN(tokenValue);
+
+      // const tokenAmountHex =
+      //   "0x" +
+      //   tokenAmount.mul(web3.utils.toBN(10).pow(decimals)).toString("hex");
+
+      // console.log(typeof tokenValue);
+
+      web3.eth.defaultAccount = fromAddress;
+
+      console.log("0000000");
+      const tx_builder = await contract.methods.pause();
+
+      console.log("11211212");
+      let encoded_tx = tx_builder.encodeABI();
+
+      let gasPrice = await web3.eth.getGasPrice();
+
+      // let gasLimit = 300000;
+
+      // console.log("gasg limit : ", gasLimit);
+
+      let transactionObject1 = {
+        from: fromAddress,
+        to: contractAddress,
+        data: encoded_tx,
+        chainId: 0x03,
+      };
+
+      var estimatedGas = await web3.eth.estimateGas(transactionObject1);
+      console.log("estimatedGas = ", estimatedGas);
+
+      var gasValue = estimatedGas * gasPrice;
+      console.log("gasvalue = ", gasValue);
+
+      let transactionObject = {
+        nonce: web3.utils.toHex(count),
+        from: fromAddress,
+        gasPrice: web3.utils.toHex(gasPrice),
+        gasLimit: web3.utils.toHex(estimatedGas),
+        to: contractAddress,
+        data: encoded_tx,
+        chainId: 0x03,
+      };
+
+      // console.log('transaction ', transactionObject)
+      web3.eth.accounts
+        .signTransaction(transactionObject, privateKey)
+        .then((signedTx) => {
+          web3.eth.sendSignedTransaction(
+            signedTx.rawTransaction,
+            async function (err, hash) {
+              if (!err) {
+                console.log("hash is : ", hash);
+                return response.status(200).json({
+                  hash: hash,
+                });
+              } else {
+                return response.status(400).json({
+                  msg: `Bad Request ${err}`,
+                });
+              }
+            }
+          );
+        })
+        .catch((err) => {
+          return response.status(400).json({
+            msg: `Your private or public address is not correct`,
+          });
+        });
+    } else {
+      return response.status(400).json({
+        msg: `Your private or public address is not correct`,
+      });
+    }
+  } catch (e) {
+    return response.status(400).json({
+      msg: "invalid transaction signing",
+      e,
+      statuscode: 4,
+    });
+  }
+});
+
+router.post("/unpause", async function (request, response) {
+  try {
+    let fromAddress = "0x8b7CDe4C9B374a3FE82a353d0595C712806Ef5Ec";
+    let privateKey = request.body.from_private_key;
+    // "0x165f452735cbc63a3c7b7d789dc7e4dd5f910dd48048d595aa2223a9cecc114a";
+    let contractAddress = "0xf34d1989779a6f692b67fd94355edc437634a377";
+    console.log(privateKey);
+    if (!privateKey.startsWith("0x")) {
+      privateKey = "0x" + privateKey;
+    }
+    let bufferedKey = ethUtil.toBuffer(privateKey);
+
+    if (
+      ethereum_address.isAddress(fromAddress) &&
+      ethereum_address.isAddress(fromAddress) &&
+      ethUtil.isValidPrivate(bufferedKey)
+    ) {
+      const contract = await new web3.eth.Contract(abi, contractAddress);
+      let count = await web3.eth.getTransactionCount(fromAddress);
+      // const decimals = web3.utils.toBN(18);
+
+      // const tokenAmount = web3.utils.toBN(tokenValue);
+
+      // const tokenAmountHex =
+      //   "0x" +
+      //   tokenAmount.mul(web3.utils.toBN(10).pow(decimals)).toString("hex");
+
+      // console.log(typeof tokenValue);
+
+      web3.eth.defaultAccount = fromAddress;
+
+      console.log("0000000");
+      const tx_builder = await contract.methods.unpause();
+
+      console.log("11211212");
+      let encoded_tx = tx_builder.encodeABI();
+
+      let gasPrice = await web3.eth.getGasPrice();
+
+      // let gasLimit = 300000;
+
+      // console.log("gasg limit : ", gasLimit);
+
+      let transactionObject1 = {
+        from: fromAddress,
+        to: contractAddress,
+        data: encoded_tx,
+        chainId: 0x03,
+      };
+
+      var estimatedGas = await web3.eth.estimateGas(transactionObject1);
+      console.log("estimatedGas = ", estimatedGas);
+
+      var gasValue = estimatedGas * gasPrice;
+      console.log("gasvalue = ", gasValue);
+
+      let transactionObject = {
+        nonce: web3.utils.toHex(count),
+        from: fromAddress,
+        gasPrice: web3.utils.toHex(gasPrice),
+        gasLimit: web3.utils.toHex(estimatedGas),
+        to: contractAddress,
+        data: encoded_tx,
+        chainId: 0x03,
+      };
+
+      // console.log('transaction ', transactionObject)
+      web3.eth.accounts
+        .signTransaction(transactionObject, privateKey)
+        .then((signedTx) => {
+          web3.eth.sendSignedTransaction(
+            signedTx.rawTransaction,
+            async function (err, hash) {
+              if (!err) {
+                console.log("hash is : ", hash);
+                return response.status(200).json({
+                  hash: hash,
+                });
+              } else {
+                return response.status(400).json({
+                  msg: `Bad Request ${err}`,
+                });
+              }
+            }
+          );
+        })
+        .catch((err) => {
+          return response.status(400).json({
+            msg: `Your private or public address is not correct`,
+          });
+        });
+    } else {
+      return response.status(400).json({
+        msg: `Your private or public address is not correct`,
+      });
+    }
+  } catch (e) {
+    return response.status(400).json({
+      msg: "invalid transaction signing",
+      e,
+      statuscode: 4,
+    });
+  }
+});
 
 router.post("/transfer", async function (request, response) {
   let fromAddress = request.body.from_address;
@@ -44,23 +255,19 @@ router.post("/transfer", async function (request, response) {
         decimal.push(res);
       });
       console.log(decimal[0]);
-      const decimals = web3.utils.toBN(decimal[0]);
-
-      const tokenAmount = web3.utils.toBN(tokenValue);
-
-      const tokenAmountHex =
-        "0x" +
-        tokenAmount.mul(web3.utils.toBN(10).pow(decimals)).toString("hex");
+      if (decimal[0] != 0) {
+        tokenValue = tokenValue * 10 ** decimal[0];
+      }
 
       console.log(typeof tokenValue);
-
 
       web3.eth.defaultAccount = fromAddress;
 
       console.log("0000000");
       const tx_builder = await contract.methods.transfer(
         toAddress,
-        tokenAmountHex);
+        tokenValue.toString()
+      );
 
       console.log("11211212");
       let encoded_tx = tx_builder.encodeABI();
@@ -194,9 +401,9 @@ router.get("/getinfo/:contract_address", async (req, response) => {
   }
 });
 
-router.get("/status/:contract_address", async (req, response) => {
+router.get("/status", async (req, response) => {
   let data = [];
-  let contractAddress = req.params.contract_address;
+  let contractAddress = "0xf34d1989779a6f692b67fd94355edc437634a377";
   try {
     const instance = await new web3.eth.Contract(abi, contractAddress);
     await instance.methods.paused().call((req, res) => {
@@ -204,10 +411,9 @@ router.get("/status/:contract_address", async (req, response) => {
       console.log(res);
     });
 
-
     response.json({
       contractAddress: contractAddress,
-      paused: data[0]
+      paused: data[0],
     });
   } catch (e) {
     return response.status(400).json({

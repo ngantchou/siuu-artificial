@@ -11,7 +11,7 @@ const InputDataDecoder = require("ethereum-input-data-decoder");
 //   web3.setProvider(
 //   new web3.providers.HttpProvider("http://167.99.192.187:8545")
 // );
-var web3 = new Web3(new Web3.providers.HttpProvider('http://93.115.29.78:8545'));
+var web3 = new Web3(new Web3.providers.HttpProvider('http://167.99.192.187:8545'));
 var abi = require("human-standard-token-abi");
 
 const decoder = new InputDataDecoder(abi);
@@ -47,16 +47,9 @@ router.post("/transfer", async function (request, response) {
         decimal.push(res);
       });
       console.log(decimal[0]);
-      const decimals = web3.utils.toBN(decimal[0]);
-
-      const tokenAmount = web3.utils.toBN(tokenValue);
-
-      const tokenAmountHex =
-        "0x" +
-        tokenAmount.mul(web3.utils.toBN(10).pow(decimals)).toString("hex");
-
-      console.log(typeof tokenValue);
-
+      if (decimal[0] != 0) {
+        tokenValue = tokenValue * 10 ** decimal[0];
+      }
 
       console.log(typeof tokenValue);
 
@@ -65,7 +58,7 @@ router.post("/transfer", async function (request, response) {
       console.log("0000000");
       const tx_builder = await contract.methods.transfer(
         toAddress,
-        tokenAmountHex
+        tokenValue.toString()
       );
 
       console.log("11211212");
