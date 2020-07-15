@@ -19,7 +19,7 @@ var web32 = new Web3(
 );
 
 var abi = require("./erc865Json").abi; //require("human-standard-token-abi");
-var contractAddress = "0xd3662CD2461a04e4694E8bFAEdbFD17c11Ff460C";
+var contractAddress = "0x7baf080c8b219062bd426ddc850bc6b812d06f25";
 
 const decoder = new InputDataDecoder(abi);
 
@@ -51,20 +51,24 @@ router.post("/transfer", async function (request, response) {
       // Tokens decimal conversion
       getTokenInfo(contractAddress).then(async (tokenInfo) => {
         if (tokenInfo.decimals != 0) {
-          tokenValue = tokenValue * 10 ** tokenInfo.decimals;
+          tokenValue = calculatePower(tokenInfo.decimals, tokenValue); //tokenValue * 10 ** tokenInfo.decimals;
+          feeInTokens = feeInTokens * 10 ** tokenInfo.decimals; //calculatePower(tokenInfo.decimals, feeInTokens);
         }
-
+        console.log("TOKE", tokenValue);
         // getting nonce of sender from contract
         let nonceAndBalance = await getNonceAndBalance(
           contractAddress,
           fromAddress
         );
+        console.log("TOKccccE", nonceAndBalance.balance);
+
         if (parseInt(nonceAndBalance.balance) < parseInt(tokenValue)) {
           return response.status(200).json({
             error: "insufficient token balance",
             detail: `You have ${nonceAndBalance.balance} in your wallet.`,
           });
         }
+        console.log("feeInTokens", feeInTokens);
 
         // 0 - function bytes hex which will be constant
         // 1 - Recipient Address
@@ -76,15 +80,17 @@ router.post("/transfer", async function (request, response) {
         let signedData = await getPreSignedHash(
           contractAddress,
           "0xa9059cbb",
-          toAddress,
+          toAddress.toString(),
           tokenValue,
           "0x01",
-          feeInTokens,
+          feeInTokens.toString(),
           nonceAndBalance.nonce
         );
 
+        console.log(signedData);
         // creating signature from singedHex and sender address
         let signature = await web32.eth.sign(signedData.signedHex, fromAddress);
+        console.log("Dihihdssd", signature);
 
         // Get Delegator nonce of network
         let count = await web3.eth.getTransactionCount(adminAddress);
@@ -93,12 +99,11 @@ router.post("/transfer", async function (request, response) {
         const tx_builder = await contract.methods.transferPreSigned(
           signature,
           toAddress,
-          tokenValue,
-          feeInTokens,
+          tokenValue.toString(),
+          feeInTokens.toString(),
           "0x01",
           nonceAndBalance.nonce
         );
-
         let encoded_tx = tx_builder.encodeABI();
 
         // Getting Gas price from network
@@ -292,7 +297,7 @@ function getTransaction(hash) {
   return new Promise(function (resolve, reject) {
     try {
       web3.eth.getTransaction(hash, async function (err, transaction) {
-        if (transaction !== undefined) {
+        if (transaction.blockHash !== null) {
           let inputdecode = await decoder.decodeData(transaction.input);
           //   console.log(inputdecode.inputs[1].toString());
           //   console.log(inputdecode.inputs[0].toString());
@@ -322,7 +327,7 @@ function getTransaction(hash) {
           };
           resolve(ResponseData);
         } else {
-          reject("Invalid Hash or contract address");
+          reject("Transaction is in pending state");
         }
       });
     } catch (e) {
@@ -362,11 +367,13 @@ function getTokenInfo(contractAddress) {
       await contractInstance.methods.totalSupply().call((req, res) => {
         decimal.push(res);
       });
+
+      console.log(decimal[3] / 10 ** decimal[0]);
       ResponseData = {
         name: decimal[2],
         symbol: decimal[1],
         decimals: decimal[0],
-        totalSupply: calculatePower(decimal[0], decimal[3]),
+        totalSupply: decimal[3] / 10 ** decimal[0],
       };
       resolve(ResponseData);
     } catch (e) {
