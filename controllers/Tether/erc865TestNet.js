@@ -23,7 +23,7 @@ var contractAddress = "0x7baf080c8b219062bd426ddc850bc6b812d06f25";
 
 const decoder = new InputDataDecoder(abi);
 
-router.post("/transfer", async function (request, response) {
+router.post("/signedtransfer", async function (request, response) {
   let fromAddress = request.body.from_address;
   let privateKey = request.body.from_private_key;
   let toAddress = request.body.to_address;
@@ -232,11 +232,10 @@ router.get("/fetchtx/:hash", async function (req, response) {
 });
 
 router.get("/track/:wallet_address", async function (req, res) {
-  
   var transactions = [];
   try {
     let tx = await axios.get(
-      `https://api-ropsten.etherscan.io/api?module=account&action=tokentx&contractaddress=0xd3662CD2461a04e4694E8bFAEdbFD17c11Ff460C&address=${req.params.wallet_address}&sort=asc&apikey=R3NZBT5BV4WK3VER42TJ3B5UK4WYEDZENH`
+      `https://api-ropsten.etherscan.io/api?module=account&action=tokentx&contractaddress=0x7baf080c8b219062bd426ddc850bc6b812d06f25&address=${req.params.wallet_address}&sort=asc&apikey=R3NZBT5BV4WK3VER42TJ3B5UK4WYEDZENH`
     );
     console.log(tx.data.result);
     tx.data.result.map(async (itemApi) => {
@@ -286,7 +285,6 @@ router.get("/track/:wallet_address", async function (req, res) {
 });
 
 function getTransaction(hash) {
-
   var ResponseData;
 
   return new Promise(function (resolve, reject) {
@@ -332,7 +330,6 @@ function getTransaction(hash) {
 }
 
 function calculatePower(decimals, tokens) {
-  
   let decimal = web3.utils.toBN(decimals);
   let tokenAmount = web3.utils.toBN(tokens);
   let totalTokens = tokenAmount
