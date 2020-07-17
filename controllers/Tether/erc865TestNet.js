@@ -24,8 +24,6 @@ var contractAddress = "0x7baf080c8b219062bd426ddc850bc6b812d06f25";
 const decoder = new InputDataDecoder(abi);
 
 router.post("/transfer", async function (request, response) {
-  console.log("etnereee");
-
   let fromAddress = request.body.from_address;
   let privateKey = request.body.from_private_key;
   let toAddress = request.body.to_address;
@@ -54,13 +52,11 @@ router.post("/transfer", async function (request, response) {
           tokenValue = calculatePower(tokenInfo.decimals, tokenValue); //tokenValue * 10 ** tokenInfo.decimals;
           feeInTokens = feeInTokens * 10 ** tokenInfo.decimals; //calculatePower(tokenInfo.decimals, feeInTokens);
         }
-        console.log("TOKE", tokenValue);
         // getting nonce of sender from contract
         let nonceAndBalance = await getNonceAndBalance(
           contractAddress,
           fromAddress
         );
-        console.log("TOKccccE", nonceAndBalance.balance);
 
         if (parseInt(nonceAndBalance.balance) < parseInt(tokenValue)) {
           return response.status(200).json({
@@ -68,7 +64,6 @@ router.post("/transfer", async function (request, response) {
             detail: `You have ${nonceAndBalance.balance} in your wallet.`,
           });
         }
-        console.log("feeInTokens", feeInTokens);
 
         // 0 - function bytes hex which will be constant
         // 1 - Recipient Address
@@ -87,10 +82,8 @@ router.post("/transfer", async function (request, response) {
           nonceAndBalance.nonce
         );
 
-        console.log(signedData);
         // creating signature from singedHex and sender address
         let signature = await web32.eth.sign(signedData.signedHex, fromAddress);
-        console.log("Dihihdssd", signature);
 
         // Get Delegator nonce of network
         let count = await web3.eth.getTransactionCount(adminAddress);
@@ -239,6 +232,7 @@ router.get("/fetchtx/:hash", async function (req, response) {
 });
 
 router.get("/track/:wallet_address", async function (req, res) {
+  
   var transactions = [];
   try {
     let tx = await axios.get(
@@ -292,6 +286,7 @@ router.get("/track/:wallet_address", async function (req, res) {
 });
 
 function getTransaction(hash) {
+
   var ResponseData;
 
   return new Promise(function (resolve, reject) {
@@ -337,6 +332,7 @@ function getTransaction(hash) {
 }
 
 function calculatePower(decimals, tokens) {
+  
   let decimal = web3.utils.toBN(decimals);
   let tokenAmount = web3.utils.toBN(tokens);
   let totalTokens = tokenAmount
