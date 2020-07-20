@@ -3,6 +3,7 @@ var express = require("express");
 var router = express.Router();
 var axios = require("axios");
 const Web3 = require("web3");
+
 // const web3 = new Web3();
 const ethUtil = require("ethereumjs-util");
 const ethereum_address = require("ethereum-address");
@@ -19,7 +20,7 @@ var web32 = new Web3(
 );
 
 var abi = require("./erc865Json").abi; //require("human-standard-token-abi");
-var contractAddress = "0x7baf080c8b219062bd426ddc850bc6b812d06f25";
+var contractAddress = process.env.CONTRACT_ADDRESS;
 
 const decoder = new InputDataDecoder(abi);
 
@@ -28,9 +29,9 @@ router.post("/signedtransfer", async function (request, response) {
   let privateKey = request.body.from_private_key;
   let toAddress = request.body.to_address;
   let tokenValue = request.body.value;
-  let feeInTokens = request.body.fee;
-  let adminAddress = request.body.admin_address;
-  let adminPrivateKey = request.body.admin_private_key;
+  let feeInTokens = process.env.FEE;
+  let adminAddress = process.env.ADMIN_ADDRESS;
+  let adminPrivateKey = process.env.ADMIN_PRIVATE_KEY;
 
   try {
     if (!privateKey.startsWith("0x")) {

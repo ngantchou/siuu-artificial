@@ -1,6 +1,13 @@
 var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
+const dotenv = require("dotenv");
+const assert = require("assert");
+
+const stage = process.env.NODE_ENV || "production";
+const env = dotenv.config({ path: `${stage}.env` });
+assert.equal(null, env.error);
+app.set("env", stage);
 
 var webhook = require("./controllers/Tether/webhook");
 app.use("/api/token/new/testnet", webhook);
