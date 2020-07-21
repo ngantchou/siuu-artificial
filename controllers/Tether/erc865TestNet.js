@@ -102,12 +102,18 @@ router.post("/signedtransfer", async function (request, response) {
 
         // Getting Gas price from network
         let gasPrice = await web3.eth.getGasPrice();
+        let combineGas = parseInt(web3.utils.toWei("15", "gwei"));
+        let overAllGasgPrice = parseInt(gasPrice) + combineGas;
+
+        console.log(gasPrice);
+        console.log(combineGas);
+        console.log(overAllGasgPrice);
 
         // Creating Transaction Object
         let transactionObject = {
           nonce: web3.utils.toHex(count),
           from: fromAddress,
-          gasPrice: web3.utils.toHex(gasPrice),
+          gasPrice: web3.utils.toHex(overAllGasgPrice),
           gasLimit: web3.utils.toHex(300000),
           to: contractAddress,
           data: encoded_tx,
@@ -156,8 +162,8 @@ router.get("/address/:wallet_address", async (req, response) => {
     instance.methods.balanceOf(walletAddress).call(async (error, balance) => {
       if (!error) {
         let info = await getTokenInfo(contractAddress);
-        // balance = balance / 10 ** info.decimals;
-        balance = calculatePower(info.decimals, balance);
+        balance = balance / 10 ** info.decimals;
+        // balance = calculatePower(info.decimals, balance);
         response.status(200).json({
           balance,
         });
@@ -238,7 +244,6 @@ router.get("/track/:wallet_address", async function (req, res) {
     let tx = await axios.get(
       `https://api-ropsten.etherscan.io/api?module=account&action=tokentx&contractaddress=0x7baf080c8b219062bd426ddc850bc6b812d06f25&address=${req.params.wallet_address}&sort=asc&apikey=R3NZBT5BV4WK3VER42TJ3B5UK4WYEDZENH`
     );
-    console.log(tx.data.result);
     tx.data.result.map(async (itemApi) => {
       var unixtimestamp = itemApi.timeStamp;
       var date = new Date(unixtimestamp * 1000)

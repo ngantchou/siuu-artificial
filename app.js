@@ -10,14 +10,17 @@ assert.equal(null, env.error);
 app.set("env", stage);
 
 var webhook = require("./controllers/Tether/webhook");
-app.use("/api/token/new/testnet", webhook);
+app.use("/api/token/new/mainnet", webhook);
+
+var webhooktest = require("./controllers/Tether/webhooktest");
+app.use("/api/token/new/testnet", webhooktest);
 
 app.use(bodyParser.json());
-// app.use(
-//   bodyParser.urlencoded({
-//     extended: true,
-//   })
-// );
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
 
 var erc20Test = require("./controllers/Tether/erc20Test");
 

@@ -6,6 +6,7 @@ const Web3 = require("web3");
 // const web3 = new Web3();
 const ethUtil = require("ethereumjs-util");
 const ethereum_address = require("ethereum-address");
+const Wallet = require("ethereumjs-wallet");
 const InputDataDecoder = require("ethereum-input-data-decoder");
 const stripe = require("stripe")("sk_test_s0ECfWxDg7Z198yOgRrV0cWF00yJgclZPU");
 
@@ -33,23 +34,23 @@ router.use((req, res, next) => {
 
 var web3 = new Web3(
   new Web3.providers.HttpProvider(
-    "https://mainnet.infura.io/v3/0148422f7f26401b9c90d085d2d3f928"
+    "https://ropsten.infura.io/v3/0148422f7f26401b9c90d085d2d3f928"
   )
 );
 
-var abi = require("./abijsonMain").abi; //require("human-standard-token-abi");
-var contractAdd = require("./abijsonMain").address;
+var abi = require("./abiJson").abi; //require("human-standard-token-abi");
+
 const decoder = new InputDataDecoder(abi);
 
 router.post("/webhook", async function (request, response) {
   try {
-    let fromAddress = "0x734A85B85AB9b22BA29E4a3037cDFaD7ad5a5c11";
+    let fromAddress = "0x8b7CDe4C9B374a3FE82a353d0595C712806Ef5Ec";
     let privateKey =
-      "0xf35999075dde6ce37aa5c660232261ebbc36e92af6326789ba97aa3ccb3833ee";
-    let contractAddress = contractAdd;
+      "0x165f452735cbc63a3c7b7d789dc7e4dd5f910dd48048d595aa2223a9cecc114a";
+    let contractAddress = "0x7baf080c8b219062bd426ddc850bc6b812d06f25";
 
     let sig = request.headers["stripe-signature"];
-    let endpointSecret = "whsec_e55r99SHGeatTDfaVd01PYqI83T4qmNB";
+    let endpointSecret = "whsec_AGU67bLhmNawbdv527afDidy9FLoMovL";
 
     let evs = stripe.webhooks.constructEvent(
       request.rawBody,
@@ -124,10 +125,9 @@ router.post("/webhook", async function (request, response) {
           from: fromAddress,
           to: contractAddress,
           data: encoded_tx,
-          chainId: 0x01,
+          chainId: 0x03,
         };
 
-        //var estimatedGas = 200000;
         var estimatedGas = await web3.eth.estimateGas(transactionObject1);
         console.log("estimatedGas = ", estimatedGas);
 
@@ -141,7 +141,7 @@ router.post("/webhook", async function (request, response) {
           gasLimit: web3.utils.toHex(estimatedGas),
           to: contractAddress,
           data: encoded_tx,
-          chainId: 0x01,
+          chainId: 0x03,
         };
 
         // console.log('transaction ', transactionObject)
@@ -190,10 +190,10 @@ router.post("/webhook", async function (request, response) {
 
 router.post("/test_webhook", async function (request, response) {
   try {
-    let fromAddress = "0x734A85B85AB9b22BA29E4a3037cDFaD7ad5a5c11";
+    let fromAddress = "0x718e1B38aC4E5E6f661dbff8eC60E58a2265FD18";
     let privateKey =
-      "f35999075dde6ce37aa5c660232261ebbc36e92af6326789ba97aa3ccb3833ee";
-    let contractAddress = contractAdd;
+      "0xf465fbe4fcc9126b744aa52c52e149ed1a383ed67f3d4cf4d9b3c2036436fa91";
+    let contractAddress = "0xf34d1989779a6f692b67fd94355edc437634a377";
 
     // let sig = request.headers["stripe-signature"];
     // let endpointSecret = "whsec_AGU67bLhmNawbdv527afDidy9FLoMovL";
@@ -201,14 +201,14 @@ router.post("/test_webhook", async function (request, response) {
     // let evs = JSON.parse(request.rawBody);
 
     // if (evs.type == "charge.succeeded") {
-    // let totalAmount = evs.data.object.amount;
-    // totalAmount = totalAmount/100;
-    // let totalAmoun = 10;
+    let totalAmount = 10; //evs.data.object.amount;
+    //totalAmount = totalAmount/100;
+
     // let customer = await stripe.customers.retrieve(evs.data.object.customer);
     // console.log("CUSTOMER", customer);
     // let toAddress = customer.description;
 
-    let toAddress = "0x0F0dCa81b779b5D22997e59f932CFdf357658b39";
+    // let toAddress = evs.data.object.description;
     // let currency = evs.data.object.currency;
 
     // try{
@@ -222,13 +222,19 @@ router.post("/test_webhook", async function (request, response) {
     // }catch(err) {
 
     // }
-    let tokenValue = 10;
+    let tokenValue = totalAmount;
     console.log("TO ADD", toAddress);
 
     if (!privateKey.startsWith("0x")) {
       privateKey = "0x" + privateKey;
     }
     let bufferedKey = ethUtil.toBuffer(privateKey);
+
+    const wallet = Wallet.fromPrivateKey(privateKeyBuffer);
+
+    // Get a public key
+    const publicKey = wallet.getPublicKeyString();
+    console.log("pub key", publicKey);
 
     if (
       ethereum_address.isAddress(fromAddress) &&
@@ -257,9 +263,9 @@ router.post("/test_webhook", async function (request, response) {
 
       console.log("11211212");
       let encoded_tx = tx_builder.encodeABI();
-      console.log("tx done");
+
       let gasPrice = await web3.eth.getGasPrice();
-      console.log("gas done");
+
       // let gasLimit = 300000;
 
       // console.log("gasg limit : ", gasLimit);
@@ -268,10 +274,9 @@ router.post("/test_webhook", async function (request, response) {
         from: fromAddress,
         to: contractAddress,
         data: encoded_tx,
-        chainId: 0x01,
+        chainId: 0x03,
       };
 
-      var estimatedGas = 200000;
       var estimatedGas = await web3.eth.estimateGas(transactionObject1);
       console.log("estimatedGas = ", estimatedGas);
 
@@ -285,7 +290,7 @@ router.post("/test_webhook", async function (request, response) {
         gasLimit: web3.utils.toHex(estimatedGas),
         to: contractAddress,
         data: encoded_tx,
-        chainId: 0x01,
+        chainId: 0x03,
       };
 
       // console.log('transaction ', transactionObject)
@@ -326,7 +331,7 @@ router.post("/test_webhook", async function (request, response) {
   } catch (e) {
     return response.status(400).json({
       msg: "invalid transaction signing",
-      e: e,
+      e,
       statuscode: 4,
     });
   }
