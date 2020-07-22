@@ -9,13 +9,13 @@ const ethUtil = require("ethereumjs-util");
 const ethereum_address = require("ethereum-address");
 const InputDataDecoder = require("ethereum-input-data-decoder");
 
-var web3 = new Web3(
-  new Web3.providers.HttpProvider(
-    "https://ropsten.infura.io/v3/0148422f7f26401b9c90d085d2d3f928"
-  )
-);
+// var web3 = new Web3(
+//   new Web3.providers.HttpProvider(
+//     "https://ropsten.infura.io/v3/0148422f7f26401b9c90d085d2d3f928"
+//   )
+// );
 
-var web32 = new Web3(
+var web3 = new Web3(
   new Web3.providers.HttpProvider("http://93.115.29.78:8545")
 );
 
@@ -45,7 +45,7 @@ router.post("/signedtransfer", async function (request, response) {
     ) {
       const contract = await new web3.eth.Contract(abi, contractAddress);
       // Adding wallet into geth
-      web32.eth.accounts.wallet.add(privateKey);
+      web3.eth.accounts.wallet.add(privateKey);
 
       // Tokens decimal conversion
       getTokenInfo(contractAddress).then(async (tokenInfo) => {
@@ -65,7 +65,6 @@ router.post("/signedtransfer", async function (request, response) {
             detail: `You have ${nonceAndBalance.balance} in your wallet.`,
           });
         }
-
         let { overAllGasgPrice, tokenFee } = await getFeeInToken();
 
         // 0 - function bytes hex which will be constant
@@ -84,8 +83,9 @@ router.post("/signedtransfer", async function (request, response) {
           tokenFee.toString(),
           nonceAndBalance.nonce
         );
+
         // creating signature from singedHex and sender address
-        let signature = await web32.eth.sign(signedData.signedHex, fromAddress);
+        let signature = await web3.eth.sign(signedData.signedHex, fromAddress);
 
         // Get Delegator nonce of network
         let count = await web3.eth.getTransactionCount(adminAddress);
@@ -106,10 +106,10 @@ router.post("/signedtransfer", async function (request, response) {
           nonce: web3.utils.toHex(count),
           from: fromAddress,
           gasPrice: web3.utils.toHex(overAllGasgPrice),
-          gasLimit: web3.utils.toHex(120000),
+          gasLimit: web3.utils.toHex(200000),
           to: contractAddress,
           data: encoded_tx,
-          chainId: 0x03,
+          chainId: 0x01,
         };
 
         // Broadcasting Transaction
@@ -234,7 +234,7 @@ router.get("/track/:wallet_address", async function (req, res) {
   var transactions = [];
   try {
     let tx = await axios.get(
-      `https://api-ropsten.etherscan.io/api?module=account&action=tokentx&contractaddress=0x7baf080c8b219062bd426ddc850bc6b812d06f25&address=${req.params.wallet_address}&sort=asc&apikey=R3NZBT5BV4WK3VER42TJ3B5UK4WYEDZENH`
+      `https://api.etherscan.io/api?module=account&action=tokentx&contractaddress=0x7baf080c8b219062bd426ddc850bc6b812d06f25&address=${req.params.wallet_address}&sort=asc&apikey=R3NZBT5BV4WK3VER42TJ3B5UK4WYEDZENH`
     );
     tx.data.result.map(async (itemApi) => {
       var unixtimestamp = itemApi.timeStamp;
@@ -281,35 +281,6 @@ router.get("/track/:wallet_address", async function (req, res) {
     //  return res.status(500).json({ error: err.toString() });
   }
 });
-
-async function getFeeInToken() {
-  console.log("---------------------------");
-  // Getting Gas price from network
-  let gasPrice = await web3.eth.getGasPrice();
-  let combineGas = parseInt(web3.utils.toWei("15", "gwei"));
-  let overAllGasgPrice = parseInt(gasPrice) + combineGas;
-  var estimatedGas = 120000;
-  var gasValue = estimatedGas * overAllGasgPrice;
-  gasValue = web3.utils.fromWei(gasValue.toString(), "ether");
-
-  console.log("gasvalue = 2 = ", gasValue);
-  let myData = await axios.get(
-    "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=BTC,USD,EUR"
-  );
-  let ethPrice = myData.data.USD;
-  console.log(ethPrice);
-
-  let tokenFee = gasValue * ethPrice;
-  tokenFee = tokenFee * 10 ** 18;
-  console.log("tokken feeee", tokenFee);
-
-  console.log("---------------------------");
-  return (responseObject = {
-    tokenFee: tokenFee,
-    gasPrice: gasPrice,
-    overAllGasgPrice: overAllGasgPrice,
-  });
-}
 
 function getTransaction(hash) {
   var ResponseData;
@@ -431,6 +402,35 @@ function getNonceAndBalance(contractAddress, walletAddress) {
     } catch (e) {
       reject(e);
     }
+  });
+}
+
+async function getFeeInToken() {
+  console.log("---------------------------");
+  // Getting Gas price from network
+  let gasPrice = await web3.eth.getGasPrice();
+  let combineGas = parseInt(web3.utils.toWei("15", "gwei"));
+  let overAllGasgPrice = parseInt(gasPrice) + combineGas;
+  var estimatedGas = 200000;
+  var gasValue = estimatedGas * overAllGasgPrice;
+  gasValue = web3.utils.fromWei(gasValue.toString(), "ether");
+
+  console.log("gasvalue = 2 = ", gasValue);
+  let myData = await axios.get(
+    "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=BTC,USD,EUR"
+  );
+  let ethPrice = myData.data.USD;
+  console.log(ethPrice);
+
+  let tokenFee = gasValue * ethPrice;
+  tokenFee = tokenFee * 10 ** 18;
+  console.log("tokken feeee", tokenFee);
+
+  console.log("---------------------------");
+  return (responseObject = {
+    tokenFee: tokenFee,
+    gasPrice: gasPrice,
+    overAllGasgPrice: overAllGasgPrice,
   });
 }
 

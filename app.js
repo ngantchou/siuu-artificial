@@ -28,9 +28,11 @@ var ethMain = require("./controllers/Ethereum/ethMain");
 var ethTest = require("./controllers/Ethereum/ethTest");
 var erc20Main = require("./controllers/Tether/erc20Main");
 var erc865TestNet = require("./controllers/Tether/erc865TestNet");
+var erc865Mainnet = require("./controllers/Tether/erc865Mainnet");
 
 app.use("/api/token/testnet", erc20Test);
 app.use("/api/gasless/testnet", erc865TestNet);
+app.use("/api/gasless/mainnet", erc865Mainnet);
 
 app.use("/api/token/mainnet", erc20Main);
 app.use("/api/ether/mainnet", ethMain);

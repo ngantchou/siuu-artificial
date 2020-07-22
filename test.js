@@ -20,7 +20,6 @@
 // var Web3 = require('web3')
 // var web3 = new Web3(new Web3.providers.HttpProvider('http://167.99.192.187:8545'));
 
-
 // web3.currentProvider.send({
 //     method: "debug_traceTransaction",
 //     params: ['0x3684f071b34da1116282ee88a106a8f2a266d273ef7d8964957f65128fb58d77',{}],
@@ -31,18 +30,26 @@
 
 // });
 
+// function stripeSetup() {
+//     var stripe = require('stripe')('sk_test_4eC39HqLyjWDarjtT1zdp7dc');
 
-function stripeSetup() {
-    var stripe = require('stripe')('sk_test_4eC39HqLyjWDarjtT1zdp7dc');
-  
-    stripe.balanceTransactions.retrieve(
-      'txn_19XJJ02eZvKYlo2ClwuJ1rbA',
-      function(err, balanceTransaction) {
-        // asynchronously called
-    console.log(balanceTransaction)  
-    }
-    );
-  }
+//     stripe.balanceTransactions.retrieve(
+//       'txn_19XJJ02eZvKYlo2ClwuJ1rbA',
+//       function(err, balanceTransaction) {
+//         // asynchronously called
+//     console.log(balanceTransaction)
+//     }
+//     );
+//   }
 
+//   stripeSetup()
 
-  stripeSetup()
+let axios = require("axios");
+
+axios
+  .get(
+    "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=BTC,USD,EUR"
+  )
+  .then((myData) => {
+    console.log(myData.data.USD);
+  });
