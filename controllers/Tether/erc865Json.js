@@ -4,59 +4,6 @@ module.exports = {
       constant: false,
       inputs: [
         {
-          name: "_signature",
-          type: "bytes",
-        },
-        {
-          name: "_to",
-          type: "address",
-        },
-        {
-          name: "_value",
-          type: "uint256",
-        },
-        {
-          name: "_extraData",
-          type: "bytes",
-        },
-        {
-          name: "_gasPrice",
-          type: "uint256",
-        },
-        {
-          name: "_nonce",
-          type: "uint256",
-        },
-      ],
-      name: "approvePreSigned",
-      outputs: [
-        {
-          name: "",
-          type: "bool",
-        },
-      ],
-      payable: false,
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [],
-      name: "name",
-      outputs: [
-        {
-          name: "",
-          type: "string",
-        },
-      ],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: false,
-      inputs: [
-        {
           name: "_spender",
           type: "address",
         },
@@ -69,394 +16,6 @@ module.exports = {
       outputs: [
         {
           name: "success",
-          type: "bool",
-        },
-      ],
-      payable: false,
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [
-        {
-          name: "_sig",
-          type: "bytes",
-        },
-        {
-          name: "_function",
-          type: "bytes4",
-        },
-        {
-          name: "_to",
-          type: "address",
-        },
-        {
-          name: "_value",
-          type: "uint256",
-        },
-        {
-          name: "_extraData",
-          type: "bytes",
-        },
-        {
-          name: "_gasPrice",
-          type: "uint256",
-        },
-        {
-          name: "_nonce",
-          type: "uint256",
-        },
-      ],
-      name: "recoverPreSigned",
-      outputs: [
-        {
-          name: "recovered",
-          type: "address",
-        },
-      ],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: false,
-      inputs: [
-        {
-          name: "_signature",
-          type: "bytes",
-        },
-        {
-          name: "_to",
-          type: "address",
-        },
-        {
-          name: "_value",
-          type: "uint256",
-        },
-        {
-          name: "_gasPrice",
-          type: "uint256",
-        },
-        {
-          name: "_extraData",
-          type: "bytes",
-        },
-        {
-          name: "_nonce",
-          type: "uint256",
-        },
-      ],
-      name: "increaseApprovalPreSigned",
-      outputs: [
-        {
-          name: "",
-          type: "bool",
-        },
-      ],
-      payable: false,
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [],
-      name: "totalSupply",
-      outputs: [
-        {
-          name: "",
-          type: "uint256",
-        },
-      ],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: false,
-      inputs: [
-        {
-          name: "_from",
-          type: "address",
-        },
-        {
-          name: "_to",
-          type: "address",
-        },
-        {
-          name: "_amount",
-          type: "uint256",
-        },
-      ],
-      name: "transferFrom",
-      outputs: [
-        {
-          name: "success",
-          type: "bool",
-        },
-      ],
-      payable: false,
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [
-        {
-          name: "_owner",
-          type: "address",
-        },
-      ],
-      name: "getNonce",
-      outputs: [
-        {
-          name: "nonce",
-          type: "uint256",
-        },
-      ],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [],
-      name: "decimals",
-      outputs: [
-        {
-          name: "",
-          type: "uint8",
-        },
-      ],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: false,
-      inputs: [
-        {
-          name: "_spender",
-          type: "address",
-        },
-        {
-          name: "_amount",
-          type: "uint256",
-        },
-      ],
-      name: "decreaseApproval",
-      outputs: [
-        {
-          name: "success",
-          type: "bool",
-        },
-      ],
-      payable: false,
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [
-        {
-          name: "_owner",
-          type: "address",
-        },
-      ],
-      name: "balanceOf",
-      outputs: [
-        {
-          name: "",
-          type: "uint256",
-        },
-      ],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [],
-      name: "owner",
-      outputs: [
-        {
-          name: "",
-          type: "address",
-        },
-      ],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [],
-      name: "symbol",
-      outputs: [
-        {
-          name: "",
-          type: "string",
-        },
-      ],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [
-        {
-          name: "",
-          type: "bytes4",
-        },
-      ],
-      name: "standardSigs",
-      outputs: [
-        {
-          name: "",
-          type: "bytes4",
-        },
-      ],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: false,
-      inputs: [
-        {
-          name: "_to",
-          type: "address",
-        },
-        {
-          name: "_amount",
-          type: "uint256",
-        },
-      ],
-      name: "transfer",
-      outputs: [
-        {
-          name: "success",
-          type: "bool",
-        },
-      ],
-      payable: false,
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [
-        {
-          name: "_function",
-          type: "bytes4",
-        },
-        {
-          name: "_to",
-          type: "address",
-        },
-        {
-          name: "_value",
-          type: "uint256",
-        },
-        {
-          name: "_extraData",
-          type: "bytes",
-        },
-        {
-          name: "_gasPrice",
-          type: "uint256",
-        },
-        {
-          name: "_nonce",
-          type: "uint256",
-        },
-      ],
-      name: "getPreSignedHash",
-      outputs: [
-        {
-          name: "txHash",
-          type: "bytes32",
-        },
-      ],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [
-        {
-          name: "_hash",
-          type: "bytes32",
-        },
-      ],
-      name: "getSignHash",
-      outputs: [
-        {
-          name: "signHash",
-          type: "bytes32",
-        },
-      ],
-      payable: false,
-      stateMutability: "pure",
-      type: "function",
-    },
-    {
-      constant: false,
-      inputs: [
-        {
-          name: "_standardSig",
-          type: "bytes4",
-        },
-        {
-          name: "_ourSig",
-          type: "bytes4",
-        },
-      ],
-      name: "updateStandard",
-      outputs: [
-        {
-          name: "success",
-          type: "bool",
-        },
-      ],
-      payable: false,
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      constant: false,
-      inputs: [
-        {
-          name: "_signature",
-          type: "bytes",
-        },
-        {
-          name: "_to",
-          type: "address",
-        },
-        {
-          name: "_value",
-          type: "uint256",
-        },
-        {
-          name: "_extraData",
-          type: "bytes",
-        },
-        {
-          name: "_gasPrice",
-          type: "uint256",
-        },
-        {
-          name: "_nonce",
-          type: "uint256",
-        },
-      ],
-      name: "approveAndCallPreSigned",
-      outputs: [
-        {
-          name: "",
           type: "bool",
         },
       ],
@@ -495,11 +54,27 @@ module.exports = {
       constant: false,
       inputs: [
         {
-          name: "_sigToRevoke",
+          name: "_signature",
           type: "bytes",
         },
+        {
+          name: "_to",
+          type: "address",
+        },
+        {
+          name: "_value",
+          type: "uint256",
+        },
+        {
+          name: "_extraData",
+          type: "bytes",
+        },
+        {
+          name: "_nonce",
+          type: "uint256",
+        },
       ],
-      name: "revokeSignature",
+      name: "approveAndCallPreSigned",
       outputs: [
         {
           name: "",
@@ -508,66 +83,6 @@ module.exports = {
       ],
       payable: false,
       stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      constant: false,
-      inputs: [
-        {
-          name: "_tokenContract",
-          type: "address",
-        },
-      ],
-      name: "token_escape",
-      outputs: [],
-      payable: false,
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [
-        {
-          name: "hash",
-          type: "bytes32",
-        },
-        {
-          name: "sig",
-          type: "bytes",
-        },
-      ],
-      name: "ecrecoverFromSig",
-      outputs: [
-        {
-          name: "recoveredAddress",
-          type: "address",
-        },
-      ],
-      payable: false,
-      stateMutability: "pure",
-      type: "function",
-    },
-    {
-      constant: true,
-      inputs: [
-        {
-          name: "_sigToRevoke",
-          type: "bytes",
-        },
-        {
-          name: "_gasPrice",
-          type: "uint256",
-        },
-      ],
-      name: "getRevokeHash",
-      outputs: [
-        {
-          name: "txHash",
-          type: "bytes32",
-        },
-      ],
-      payable: false,
-      stateMutability: "pure",
       type: "function",
     },
     {
@@ -586,7 +101,61 @@ module.exports = {
           type: "uint256",
         },
         {
-          name: "_gasPrice",
+          name: "_extraData",
+          type: "bytes",
+        },
+        {
+          name: "_nonce",
+          type: "uint256",
+        },
+      ],
+      name: "approvePreSigned",
+      outputs: [
+        {
+          name: "",
+          type: "bool",
+        },
+      ],
+      payable: false,
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      constant: false,
+      inputs: [
+        {
+          name: "_spender",
+          type: "address",
+        },
+        {
+          name: "_amount",
+          type: "uint256",
+        },
+      ],
+      name: "decreaseApproval",
+      outputs: [
+        {
+          name: "success",
+          type: "bool",
+        },
+      ],
+      payable: false,
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      constant: false,
+      inputs: [
+        {
+          name: "_signature",
+          type: "bytes",
+        },
+        {
+          name: "_to",
+          type: "address",
+        },
+        {
+          name: "_value",
           type: "uint256",
         },
         {
@@ -633,53 +202,57 @@ module.exports = {
       type: "function",
     },
     {
-      constant: true,
-      inputs: [
-        {
-          name: "_owner",
-          type: "address",
-        },
-        {
-          name: "_spender",
-          type: "address",
-        },
-      ],
-      name: "allowance",
-      outputs: [
-        {
-          name: "",
-          type: "uint256",
-        },
-      ],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      constant: true,
+      constant: false,
       inputs: [
         {
           name: "_signature",
           type: "bytes",
         },
         {
-          name: "_sigToRevoke",
+          name: "_to",
+          type: "address",
+        },
+        {
+          name: "_value",
+          type: "uint256",
+        },
+        {
+          name: "_extraData",
           type: "bytes",
         },
         {
-          name: "_gasPrice",
+          name: "_nonce",
           type: "uint256",
         },
       ],
-      name: "recoverRevokeHash",
+      name: "increaseApprovalPreSigned",
       outputs: [
         {
-          name: "from",
-          type: "address",
+          name: "",
+          type: "bool",
         },
       ],
       payable: false,
-      stateMutability: "pure",
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      constant: false,
+      inputs: [
+        {
+          name: "_sigToRevoke",
+          type: "bytes",
+        },
+      ],
+      name: "revokeSignature",
+      outputs: [
+        {
+          name: "",
+          type: "bool",
+        },
+      ],
+      payable: false,
+      stateMutability: "nonpayable",
       type: "function",
     },
     {
@@ -692,10 +265,6 @@ module.exports = {
         {
           name: "_sigToRevoke",
           type: "bytes",
-        },
-        {
-          name: "_gasPrice",
-          type: "uint256",
         },
       ],
       name: "revokeSignaturePreSigned",
@@ -713,11 +282,11 @@ module.exports = {
       constant: false,
       inputs: [
         {
-          name: "newOwner",
+          name: "_tokenContract",
           type: "address",
         },
       ],
-      name: "transferOwnership",
+      name: "token_escape",
       outputs: [],
       payable: false,
       stateMutability: "nonpayable",
@@ -727,51 +296,24 @@ module.exports = {
       constant: false,
       inputs: [
         {
-          name: "_signature",
-          type: "bytes",
-        },
-        {
           name: "_to",
           type: "address",
         },
         {
-          name: "_value",
-          type: "uint256",
-        },
-        {
-          name: "_gasPrice",
-          type: "uint256",
-        },
-        {
-          name: "_extraData",
-          type: "bytes",
-        },
-        {
-          name: "_nonce",
+          name: "_amount",
           type: "uint256",
         },
       ],
-      name: "transferPreSigned",
+      name: "transfer",
       outputs: [
         {
-          name: "",
+          name: "success",
           type: "bool",
         },
       ],
       payable: false,
       stateMutability: "nonpayable",
       type: "function",
-    },
-    {
-      inputs: [],
-      payable: false,
-      stateMutability: "nonpayable",
-      type: "constructor",
-    },
-    {
-      payable: false,
-      stateMutability: "nonpayable",
-      type: "fallback",
     },
     {
       anonymous: false,
@@ -850,6 +392,424 @@ module.exports = {
       ],
       name: "OwnershipTransferred",
       type: "event",
+    },
+    {
+      constant: false,
+      inputs: [
+        {
+          name: "_from",
+          type: "address",
+        },
+        {
+          name: "_to",
+          type: "address",
+        },
+        {
+          name: "_amount",
+          type: "uint256",
+        },
+      ],
+      name: "transferFrom",
+      outputs: [
+        {
+          name: "success",
+          type: "bool",
+        },
+      ],
+      payable: false,
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      constant: false,
+      inputs: [
+        {
+          name: "newOwner",
+          type: "address",
+        },
+      ],
+      name: "transferOwnership",
+      outputs: [],
+      payable: false,
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      constant: false,
+      inputs: [
+        {
+          name: "_signature",
+          type: "bytes",
+        },
+        {
+          name: "_to",
+          type: "address",
+        },
+        {
+          name: "_value",
+          type: "uint256",
+        },
+        {
+          name: "_extraData",
+          type: "bytes",
+        },
+        {
+          name: "_nonce",
+          type: "uint256",
+        },
+      ],
+      name: "transferPreSigned",
+      outputs: [
+        {
+          name: "",
+          type: "bool",
+        },
+      ],
+      payable: false,
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      payable: false,
+      stateMutability: "nonpayable",
+      type: "fallback",
+    },
+    {
+      inputs: [],
+      payable: false,
+      stateMutability: "nonpayable",
+      type: "constructor",
+    },
+    {
+      constant: false,
+      inputs: [
+        {
+          name: "_standardSig",
+          type: "bytes4",
+        },
+        {
+          name: "_ourSig",
+          type: "bytes4",
+        },
+      ],
+      name: "updateStandard",
+      outputs: [
+        {
+          name: "success",
+          type: "bool",
+        },
+      ],
+      payable: false,
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      constant: true,
+      inputs: [
+        {
+          name: "_owner",
+          type: "address",
+        },
+        {
+          name: "_spender",
+          type: "address",
+        },
+      ],
+      name: "allowance",
+      outputs: [
+        {
+          name: "",
+          type: "uint256",
+        },
+      ],
+      payable: false,
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      constant: true,
+      inputs: [
+        {
+          name: "_owner",
+          type: "address",
+        },
+      ],
+      name: "balanceOf",
+      outputs: [
+        {
+          name: "",
+          type: "uint256",
+        },
+      ],
+      payable: false,
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      constant: true,
+      inputs: [],
+      name: "decimals",
+      outputs: [
+        {
+          name: "",
+          type: "uint8",
+        },
+      ],
+      payable: false,
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      constant: true,
+      inputs: [
+        {
+          name: "hash",
+          type: "bytes32",
+        },
+        {
+          name: "sig",
+          type: "bytes",
+        },
+      ],
+      name: "ecrecoverFromSig",
+      outputs: [
+        {
+          name: "recoveredAddress",
+          type: "address",
+        },
+      ],
+      payable: false,
+      stateMutability: "pure",
+      type: "function",
+    },
+    {
+      constant: true,
+      inputs: [
+        {
+          name: "_owner",
+          type: "address",
+        },
+      ],
+      name: "getNonce",
+      outputs: [
+        {
+          name: "nonce",
+          type: "uint256",
+        },
+      ],
+      payable: false,
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      constant: true,
+      inputs: [
+        {
+          name: "_function",
+          type: "bytes4",
+        },
+        {
+          name: "_to",
+          type: "address",
+        },
+        {
+          name: "_value",
+          type: "uint256",
+        },
+        {
+          name: "_extraData",
+          type: "bytes",
+        },
+        {
+          name: "_nonce",
+          type: "uint256",
+        },
+      ],
+      name: "getPreSignedHash",
+      outputs: [
+        {
+          name: "txHash",
+          type: "bytes32",
+        },
+      ],
+      payable: false,
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      constant: true,
+      inputs: [
+        {
+          name: "_sigToRevoke",
+          type: "bytes",
+        },
+      ],
+      name: "getRevokeHash",
+      outputs: [
+        {
+          name: "txHash",
+          type: "bytes32",
+        },
+      ],
+      payable: false,
+      stateMutability: "pure",
+      type: "function",
+    },
+    {
+      constant: true,
+      inputs: [
+        {
+          name: "_hash",
+          type: "bytes32",
+        },
+      ],
+      name: "getSignHash",
+      outputs: [
+        {
+          name: "signHash",
+          type: "bytes32",
+        },
+      ],
+      payable: false,
+      stateMutability: "pure",
+      type: "function",
+    },
+    {
+      constant: true,
+      inputs: [],
+      name: "name",
+      outputs: [
+        {
+          name: "",
+          type: "string",
+        },
+      ],
+      payable: false,
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      constant: true,
+      inputs: [],
+      name: "owner",
+      outputs: [
+        {
+          name: "",
+          type: "address",
+        },
+      ],
+      payable: false,
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      constant: true,
+      inputs: [
+        {
+          name: "_sig",
+          type: "bytes",
+        },
+        {
+          name: "_function",
+          type: "bytes4",
+        },
+        {
+          name: "_to",
+          type: "address",
+        },
+        {
+          name: "_value",
+          type: "uint256",
+        },
+        {
+          name: "_extraData",
+          type: "bytes",
+        },
+        {
+          name: "_nonce",
+          type: "uint256",
+        },
+      ],
+      name: "recoverPreSigned",
+      outputs: [
+        {
+          name: "recovered",
+          type: "address",
+        },
+      ],
+      payable: false,
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      constant: true,
+      inputs: [
+        {
+          name: "_signature",
+          type: "bytes",
+        },
+        {
+          name: "_sigToRevoke",
+          type: "bytes",
+        },
+      ],
+      name: "recoverRevokeHash",
+      outputs: [
+        {
+          name: "from",
+          type: "address",
+        },
+      ],
+      payable: false,
+      stateMutability: "pure",
+      type: "function",
+    },
+    {
+      constant: true,
+      inputs: [
+        {
+          name: "",
+          type: "bytes4",
+        },
+      ],
+      name: "standardSigs",
+      outputs: [
+        {
+          name: "",
+          type: "bytes4",
+        },
+      ],
+      payable: false,
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      constant: true,
+      inputs: [],
+      name: "symbol",
+      outputs: [
+        {
+          name: "",
+          type: "string",
+        },
+      ],
+      payable: false,
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      constant: true,
+      inputs: [],
+      name: "totalSupply",
+      outputs: [
+        {
+          name: "",
+          type: "uint256",
+        },
+      ],
+      payable: false,
+      stateMutability: "view",
+      type: "function",
     },
   ],
 };

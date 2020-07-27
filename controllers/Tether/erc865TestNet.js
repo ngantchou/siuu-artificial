@@ -29,7 +29,7 @@ router.post("/signedtransfer", async function (request, response) {
   let privateKey = request.body.from_private_key;
   let toAddress = request.body.to_address;
   let tokenValue = request.body.value;
-  let feeInTokens = process.env.FEE;
+  // let feeInTokens = process.env.FEE;
   let adminAddress = process.env.ADMIN_ADDRESS;
   let adminPrivateKey = process.env.ADMIN_PRIVATE_KEY;
 
@@ -51,7 +51,7 @@ router.post("/signedtransfer", async function (request, response) {
       getTokenInfo(contractAddress).then(async (tokenInfo) => {
         if (tokenInfo.decimals != 0) {
           tokenValue = calculatePower(tokenInfo.decimals, tokenValue); //tokenValue * 10 ** tokenInfo.decimals;
-          feeInTokens = feeInTokens * 10 ** tokenInfo.decimals; //calculatePower(tokenInfo.decimals, feeInTokens);
+          // feeInTokens = feeInTokens * 10 ** tokenInfo.decimals; //calculatePower(tokenInfo.decimals, feeInTokens);
         }
         // getting nonce of sender from contract
         let nonceAndBalance = await getNonceAndBalance(
@@ -81,7 +81,6 @@ router.post("/signedtransfer", async function (request, response) {
           toAddress.toString(),
           tokenValue,
           "0x01",
-          tokenFee.toString(),
           nonceAndBalance.nonce
         );
         // creating signature from singedHex and sender address
@@ -95,7 +94,6 @@ router.post("/signedtransfer", async function (request, response) {
           signature,
           toAddress,
           tokenValue.toString(),
-          tokenFee.toString(),
           "0x01",
           nonceAndBalance.nonce
         );
@@ -234,7 +232,7 @@ router.get("/track/:wallet_address", async function (req, res) {
   var transactions = [];
   try {
     let tx = await axios.get(
-      `https://api-ropsten.etherscan.io/api?module=account&action=tokentx&contractaddress=0x7baf080c8b219062bd426ddc850bc6b812d06f25&address=${req.params.wallet_address}&sort=asc&apikey=R3NZBT5BV4WK3VER42TJ3B5UK4WYEDZENH`
+      `https://api-ropsten.etherscan.io/api?module=account&action=tokentx&contractaddress=0x4a22acc435d75f766ebe3f7f84d30b09834954e5&address=${req.params.wallet_address}&sort=asc&apikey=R3NZBT5BV4WK3VER42TJ3B5UK4WYEDZENH`
     );
     tx.data.result.map(async (itemApi) => {
       var unixtimestamp = itemApi.timeStamp;
@@ -338,8 +336,8 @@ function getTransaction(hash) {
             from: transaction.from,
             to: "0x" + inputdecode.inputs[1].toString(),
             value: decimals,
-            feeInTokens:
-              parseInt(inputdecode.inputs[3].toString()) / 10 ** info.decimals,
+            // feeInTokens:
+            //   parseInt(inputdecode.inputs[3].toString()) / 10 ** info.decimals,
             gas_price: transaction.gasPrice,
             hash: transaction.hash,
             confirmations: confirmation,
@@ -440,7 +438,6 @@ function getPreSignedHash(
   toAddress,
   tokenToSend,
   extraData,
-  gasPrice,
   nonce
 ) {
   return new Promise(async function (resolve, reject) {
@@ -451,14 +448,7 @@ function getPreSignedHash(
       );
       const signedArray = [];
       await contractInstance.methods
-        .getPreSignedHash(
-          funcBytes,
-          toAddress,
-          tokenToSend,
-          extraData,
-          gasPrice,
-          nonce
-        )
+        .getPreSignedHash(funcBytes, toAddress, tokenToSend, extraData, nonce)
         .call((req, res) => {
           signedArray.push(res);
         });

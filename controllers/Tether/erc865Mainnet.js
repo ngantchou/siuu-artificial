@@ -16,7 +16,7 @@ const InputDataDecoder = require("ethereum-input-data-decoder");
 // );
 
 var web3 = new Web3(
-  new Web3.providers.HttpProvider("http://93.115.29.78:8545")
+  new Web3.providers.HttpProvider("http://54.186.240.155:8545")
 );
 
 var abi = require("./erc865Json").abi; //require("human-standard-token-abi");
@@ -290,6 +290,7 @@ function getTransaction(hash) {
       web3.eth.getTransaction(hash, async function (err, transaction) {
         if (transaction.blockHash !== null) {
           let inputdecode = await decoder.decodeData(transaction.input);
+          console.log(transaction);
           //   console.log(inputdecode.inputs[1].toString());
           //   console.log(inputdecode.inputs[0].toString());
           // inputdecode.inputs.map((tx) => {
@@ -440,7 +441,6 @@ function getPreSignedHash(
   toAddress,
   tokenToSend,
   extraData,
-  gasPrice,
   nonce
 ) {
   return new Promise(async function (resolve, reject) {
