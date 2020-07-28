@@ -47,7 +47,7 @@ router.post("/webhook", async function (request, response) {
     let fromAddress = "0x8b7CDe4C9B374a3FE82a353d0595C712806Ef5Ec";
     let privateKey =
       "0x165f452735cbc63a3c7b7d789dc7e4dd5f910dd48048d595aa2223a9cecc114a";
-    let contractAddress = "0x7baf080c8b219062bd426ddc850bc6b812d06f25";
+    let contractAddress = "0x4a22acc435d75f766ebe3f7f84d30b09834954e5";
 
     let sig = request.headers["stripe-signature"];
     let endpointSecret = "whsec_AGU67bLhmNawbdv527afDidy9FLoMovL";
