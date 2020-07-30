@@ -319,7 +319,7 @@ function getTransaction(hash) {
           let inputdecode = await decoder.decodeData(transaction.input);
           console.log(inputdecode.inputs[1].toString());
           console.log(inputdecode.inputs[0].toString());
-
+          let recipet = await web3.eth.getTransactionReceipt(hash);
           // inputdecode.inputs.map((tx) => {
           //   console.log(" : ",tx.toString());
           // });
@@ -340,6 +340,8 @@ function getTransaction(hash) {
             // feeInTokens:
             //   parseInt(inputdecode.inputs[3].toString()) / 10 ** info.decimals,
             gas_price: transaction.gasPrice,
+            gas_used: recipet.gasUsed,
+
             hash: transaction.hash,
             confirmations: confirmation,
             timestamp: time.timestamp,
