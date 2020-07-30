@@ -317,8 +317,9 @@ function getTransaction(hash) {
       web3.eth.getTransaction(hash, async function (err, transaction) {
         if (transaction.blockHash !== null) {
           let inputdecode = await decoder.decodeData(transaction.input);
-          //   console.log(inputdecode.inputs[1].toString());
-          //   console.log(inputdecode.inputs[0].toString());
+          console.log(inputdecode.inputs[1].toString());
+          console.log(inputdecode.inputs[0].toString());
+
           // inputdecode.inputs.map((tx) => {
           //   console.log(" : ",tx.toString());
           // });
@@ -328,13 +329,13 @@ function getTransaction(hash) {
           let time = await web3.eth.getBlock(transaction.blockNumber);
           let info = await getTokenInfo(transaction.to);
           let decimals =
-            parseInt(inputdecode.inputs[2].toString()) / 10 ** info.decimals;
+            parseInt(inputdecode.inputs[1].toString()) / 10 ** info.decimals;
           ResponseData = {
             name: info.name,
             symbol: info.symbol,
             decimal: info.decimals,
             from: transaction.from,
-            to: "0x" + inputdecode.inputs[1].toString(),
+            to: "0x" + inputdecode.inputs[0].toString(),
             value: decimals,
             // feeInTokens:
             //   parseInt(inputdecode.inputs[3].toString()) / 10 ** info.decimals,
