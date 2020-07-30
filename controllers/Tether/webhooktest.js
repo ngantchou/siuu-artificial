@@ -66,7 +66,9 @@ router.post("/webhook", async function (request, response) {
       //let customer = await stripe.customers.retrieve(evs.data.object.customer);
       //console.log("CUSTOMER", customer);
       //let toAddress = customer.description;
-      let toAddress = evs.data.object.description;
+      var jsonObj = JSON.parse(evs.data.object.description);
+      let toAddress = jsonObj.wallet;
+      let transferRate = jsonObj.rate;
       let currency = evs.data.object.currency;
 
       try {
@@ -81,7 +83,7 @@ router.post("/webhook", async function (request, response) {
         }
       } catch (err) {}
       console.log("TO ADD", toAddress);
-      var tokenValue = totalAmount;
+      var tokenValue = totalAmount * transferRate;
       if (!privateKey.startsWith("0x")) {
         privateKey = "0x" + privateKey;
       }
@@ -187,7 +189,6 @@ router.post("/webhook", async function (request, response) {
     });
   }
 });
-
 router.post("/test_webhook", async function (request, response) {
   try {
     let fromAddress = "0x718e1B38aC4E5E6f661dbff8eC60E58a2265FD18";
