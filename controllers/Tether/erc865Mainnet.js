@@ -9,18 +9,18 @@ const ethUtil = require("ethereumjs-util");
 const ethereum_address = require("ethereum-address");
 const InputDataDecoder = require("ethereum-input-data-decoder");
 
-// var web3 = new Web3(
-//   new Web3.providers.HttpProvider(
-//     "https://ropsten.infura.io/v3/0148422f7f26401b9c90d085d2d3f928"
-//   )
-// );
-
 var web3 = new Web3(
-  new Web3.providers.HttpProvider("http://54.186.240.155:8545")
+  new Web3.providers.HttpProvider(
+    "https://mainnet.infura.io/v3/0148422f7f26401b9c90d085d2d3f928"
+  )
+);
+
+var web32 = new Web3(
+  new Web3.providers.HttpProvider("http://93.115.29.78:8545")
 );
 
 var abi = require("./erc865Json").abi; //require("human-standard-token-abi");
-var contractAddress = process.env.CONTRACT_ADDRESS;
+var contractAddress = process.env.MAINNET_CONTRACT_ADDRESS;
 
 const decoder = new InputDataDecoder(abi);
 
@@ -29,7 +29,7 @@ router.post("/signedtransfer", async function (request, response) {
   let privateKey = request.body.from_private_key;
   let toAddress = request.body.to_address;
   let tokenValue = request.body.value;
-  let feeInTokens = process.env.FEE;
+  // let feeInTokens = process.env.FEE;
   let adminAddress = process.env.ADMIN_ADDRESS;
   let adminPrivateKey = process.env.ADMIN_PRIVATE_KEY;
 
@@ -45,13 +45,13 @@ router.post("/signedtransfer", async function (request, response) {
     ) {
       const contract = await new web3.eth.Contract(abi, contractAddress);
       // Adding wallet into geth
-      web3.eth.accounts.wallet.add(privateKey);
+      web32.eth.accounts.wallet.add(privateKey);
 
       // Tokens decimal conversion
       getTokenInfo(contractAddress).then(async (tokenInfo) => {
         if (tokenInfo.decimals != 0) {
           tokenValue = calculatePower(tokenInfo.decimals, tokenValue); //tokenValue * 10 ** tokenInfo.decimals;
-          feeInTokens = feeInTokens * 10 ** tokenInfo.decimals; //calculatePower(tokenInfo.decimals, feeInTokens);
+          // feeInTokens = feeInTokens * 10 ** tokenInfo.decimals; //calculatePower(tokenInfo.decimals, feeInTokens);
         }
         // getting nonce of sender from contract
         let nonceAndBalance = await getNonceAndBalance(
@@ -65,6 +65,7 @@ router.post("/signedtransfer", async function (request, response) {
             detail: `You have ${nonceAndBalance.balance} in your wallet.`,
           });
         }
+
         let { overAllGasgPrice, tokenFee } = await getFeeInToken();
 
         // 0 - function bytes hex which will be constant
@@ -80,12 +81,10 @@ router.post("/signedtransfer", async function (request, response) {
           toAddress.toString(),
           tokenValue,
           "0x01",
-          tokenFee.toString(),
           nonceAndBalance.nonce
         );
-
         // creating signature from singedHex and sender address
-        let signature = await web3.eth.sign(signedData.signedHex, fromAddress);
+        let signature = await web32.eth.sign(signedData.signedHex, fromAddress);
 
         // Get Delegator nonce of network
         let count = await web3.eth.getTransactionCount(adminAddress);
@@ -95,7 +94,6 @@ router.post("/signedtransfer", async function (request, response) {
           signature,
           toAddress,
           tokenValue.toString(),
-          tokenFee.toString(),
           "0x01",
           nonceAndBalance.nonce
         );
@@ -106,7 +104,7 @@ router.post("/signedtransfer", async function (request, response) {
           nonce: web3.utils.toHex(count),
           from: fromAddress,
           gasPrice: web3.utils.toHex(overAllGasgPrice),
-          gasLimit: web3.utils.toHex(200000),
+          gasLimit: web3.utils.toHex(120000),
           to: contractAddress,
           data: encoded_tx,
           chainId: 0x01,
@@ -234,7 +232,7 @@ router.get("/track/:wallet_address", async function (req, res) {
   var transactions = [];
   try {
     let tx = await axios.get(
-      `https://api.etherscan.io/api?module=account&action=tokentx&contractaddress=0x7baf080c8b219062bd426ddc850bc6b812d06f25&address=${req.params.wallet_address}&sort=asc&apikey=R3NZBT5BV4WK3VER42TJ3B5UK4WYEDZENH`
+      `https://api.etherscan.io/api?module=account&action=tokentx&contractaddress=${process.env.MAINNET_CONTRACT_ADDRESS}&address=${req.params.wallet_address}&sort=asc&apikey=R3NZBT5BV4WK3VER42TJ3B5UK4WYEDZENH`
     );
     tx.data.result.map(async (itemApi) => {
       var unixtimestamp = itemApi.timeStamp;
@@ -282,6 +280,35 @@ router.get("/track/:wallet_address", async function (req, res) {
   }
 });
 
+async function getFeeInToken() {
+  console.log("---------------------------");
+  // Getting Gas price from network
+  let gasPrice = await web3.eth.getGasPrice();
+  let combineGas = parseInt(web3.utils.toWei("15", "gwei"));
+  let overAllGasgPrice = parseInt(gasPrice) + combineGas;
+  var estimatedGas = 120000;
+  var gasValue = estimatedGas * overAllGasgPrice;
+  gasValue = web3.utils.fromWei(gasValue.toString(), "ether");
+
+  console.log("gasvalue = 2 = ", gasValue);
+  let myData = await axios.get(
+    "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=BTC,USD,EUR"
+  );
+  let ethPrice = myData.data.USD;
+  console.log(ethPrice);
+
+  let tokenFee = gasValue * ethPrice;
+  tokenFee = tokenFee * 10 ** 18;
+  console.log("tokken feeee", tokenFee);
+
+  console.log("---------------------------");
+  return (responseObject = {
+    tokenFee: tokenFee,
+    gasPrice: gasPrice,
+    overAllGasgPrice: overAllGasgPrice,
+  });
+}
+
 function getTransaction(hash) {
   var ResponseData;
 
@@ -290,11 +317,11 @@ function getTransaction(hash) {
       web3.eth.getTransaction(hash, async function (err, transaction) {
         if (transaction.blockHash !== null) {
           let inputdecode = await decoder.decodeData(transaction.input);
-          console.log(transaction);
-          //   console.log(inputdecode.inputs[1].toString());
-          //   console.log(inputdecode.inputs[0].toString());
+          // console.log(inputdecode.inputs[1].toString());
+          // console.log(inputdecode.inputs[0].toString());
+          let recipet = await web3.eth.getTransactionReceipt(hash);
           // inputdecode.inputs.map((tx) => {
-          //   console.log(" : ",tx.toString());
+          //   console.log(" : ", tx.toString());
           // });
 
           var confirmation =
@@ -308,11 +335,13 @@ function getTransaction(hash) {
             symbol: info.symbol,
             decimal: info.decimals,
             from: transaction.from,
-            to: "0x" + inputdecode.inputs[1].toString(),
+            to: process.env.MAINNET_CONTRACT_ADDRESS,
             value: decimals,
-            feeInTokens:
-              parseInt(inputdecode.inputs[3].toString()) / 10 ** info.decimals,
+            // feeInTokens:
+            //   parseInt(inputdecode.inputs[3].toString()) / 10 ** info.decimals,
             gas_price: transaction.gasPrice,
+            gas_used: recipet.gasUsed,
+
             hash: transaction.hash,
             confirmations: confirmation,
             timestamp: time.timestamp,
@@ -406,35 +435,6 @@ function getNonceAndBalance(contractAddress, walletAddress) {
   });
 }
 
-async function getFeeInToken() {
-  console.log("---------------------------");
-  // Getting Gas price from network
-  let gasPrice = await web3.eth.getGasPrice();
-  let combineGas = parseInt(web3.utils.toWei("15", "gwei"));
-  let overAllGasgPrice = parseInt(gasPrice) + combineGas;
-  var estimatedGas = 200000;
-  var gasValue = estimatedGas * overAllGasgPrice;
-  gasValue = web3.utils.fromWei(gasValue.toString(), "ether");
-
-  console.log("gasvalue = 2 = ", gasValue);
-  let myData = await axios.get(
-    "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=BTC,USD,EUR"
-  );
-  let ethPrice = myData.data.USD;
-  console.log(ethPrice);
-
-  let tokenFee = gasValue * ethPrice;
-  tokenFee = tokenFee * 10 ** 18;
-  console.log("tokken feeee", tokenFee);
-
-  console.log("---------------------------");
-  return (responseObject = {
-    tokenFee: tokenFee,
-    gasPrice: gasPrice,
-    overAllGasgPrice: overAllGasgPrice,
-  });
-}
-
 function getPreSignedHash(
   contractAddress,
   funcBytes,
@@ -451,14 +451,7 @@ function getPreSignedHash(
       );
       const signedArray = [];
       await contractInstance.methods
-        .getPreSignedHash(
-          funcBytes,
-          toAddress,
-          tokenToSend,
-          extraData,
-          gasPrice,
-          nonce
-        )
+        .getPreSignedHash(funcBytes, toAddress, tokenToSend, extraData, nonce)
         .call((req, res) => {
           signedArray.push(res);
         });
