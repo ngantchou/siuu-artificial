@@ -3,6 +3,7 @@ var express = require("express");
 var router = express.Router();
 var axios = require("axios");
 const Web3 = require("web3");
+const config = require('./abijsonMain');
 // const web3 = new Web3();
 const ethUtil = require("ethereumjs-util");
 const ethereum_address = require("ethereum-address");
@@ -14,17 +15,16 @@ const InputDataDecoder = require("ethereum-input-data-decoder");
 var web3 = new Web3(new Web3.providers.HttpProvider('http://167.99.192.187:8545'));
 var abi = require("human-standard-token-abi");
 
-const decoder = new InputDataDecoder(abi);
+const decoder = new InputDataDecoder(config.abi);
 
-// var contractAddress = "0x071dc402d73644a6f0bc9abad002d20c11e38823";
+var contractAddress = config.address;
 //----------------------------------Send Tokens----------------------------------------------
-// let contract = new web3.eth.Contract(abi, contractAddress);
+let instance = new web3.eth.Contract(config.abi, contractAddress);
 router.post("/transfer", async function (request, response) {
   let fromAddress = request.body.from_address;
   let privateKey = request.body.from_private_key;
   let toAddress = request.body.to_address;
   let tokenValue = request.body.value;
-  let contractAddress = request.body.contract_address;
 
   try {
 
@@ -39,24 +39,24 @@ router.post("/transfer", async function (request, response) {
       ethereum_address.isAddress(fromAddress) &&
       ethUtil.isValidPrivate(bufferedKey)
     ) {
-      const contract = await new web3.eth.Contract(abi, contractAddress);
       let count = await web3.eth.getTransactionCount(fromAddress);
 
-      const decimal = [];
-      await contract.methods.decimals().call((req, res) => {
-        decimal.push(res);
-      });
-      console.log(decimal[0]);
-      if (decimal[0] != 0) {
-        tokenValue = tokenValue * 10 ** decimal[0];
-      }
+      // const decimal = [];
+      // await instance.methods.decimals().call((req, res) => {
+      //   decimal.push(res);
+      // });
+      // console.log(decimal[0]);
+      // if (decimal[0] != 0) {
+      //   tokenValue = tokenValue * 10 ** decimal[0];
+      // }
+      tokenValue = web3.utils.toWei(tokenValue, "ether")
 
       console.log(typeof tokenValue);
 
       web3.eth.defaultAccount = fromAddress;
 
       console.log("0000000");
-      const tx_builder = await contract.methods.transfer(
+      const tx_builder = await instance.methods.transfer(
         toAddress,
         tokenValue.toString()
       );
@@ -133,15 +133,14 @@ router.post("/transfer", async function (request, response) {
 });
 
 router.get(
-  "/address/:wallet_address/:contract_address",
+  "/address/:wallet_address",
   async (req, response) => {
     let walletAddress = req.params.wallet_address;
-    let contractAddress = req.params.contract_address;
+
     try {
-      const instance = await new web3.eth.Contract(abi, contractAddress);
       instance.methods.balanceOf(walletAddress).call(async (error, balance) => {
         if (!error) {
-          let info = await getTokenInfo(contractAddress);
+          let info = await getTokenInfo();
 
           balance = balance / 10 ** info.decimals;
           response.status(200).json({
@@ -159,14 +158,11 @@ router.get(
   }
 );
 
-router.get("/getinfo/:contract_address", async (req, response) => {
+router.get("/getinfo", async (req, response) => {
   let data = [];
-  let contractAddress = req.params.contract_address;
   try {
     // web3.eth.isSyncing()
     //   .then(console.log);
-
-    const instance = await new web3.eth.Contract(abi, contractAddress);
     await instance.methods.name().call((req, res) => {
       data.push(res);
     });
@@ -277,14 +273,14 @@ function getTransaction(hash) {
   });
 }
 
-function getTokenInfo(contractAddress) {
+function getTokenInfo() {
   var ResponseData;
 
   return new Promise(async function (resolve, reject) {
     try {
       const contractInstance = await new web3.eth.Contract(
-        abi,
-        contractAddress
+        config.abi,
+        config.address
       );
       const decimal = [];
       await contractInstance.methods.decimals().call((req, res) => {
@@ -310,14 +306,14 @@ function getTokenInfo(contractAddress) {
 }
 
 
-router.get("/track/:wallet_address/:contract_address", async function (
+router.get("/track/:wallet_address", async function (
   req,
   res
 ) {
   var transactions = [];
   try {
     let tx = await axios.get(
-      `https://api.etherscan.io/api?module=account&action=tokentx&contractaddress=${req.params.contract_address}&address=${req.params.wallet_address}&sort=asc&apikey=R3NZBT5BV4WK3VER42TJ3B5UK4WYEDZENH`
+      `https://api.etherscan.io/api?module=account&action=tokentx&contractaddress=${config.address}&address=${req.params.wallet_address}&sort=asc&apikey=R3NZBT5BV4WK3VER42TJ3B5UK4WYEDZENH`
     );
     console.log(tx.data.result);
     tx.data.result.map(async (itemApi) => {
