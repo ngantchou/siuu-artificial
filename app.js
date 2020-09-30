@@ -5,15 +5,17 @@ const dotenv = require("dotenv");
 const assert = require("assert");
 
 const stage = process.env.NODE_ENV || "production";
-const env = dotenv.config({ path: `${stage}.env` });
+const env = dotenv.config({
+  path: `${stage}.env`
+});
 assert.equal(null, env.error);
 app.set("env", stage);
 
-var webhook = require("./controllers/Tether/webhook");
-app.use("/api/token/new/mainnet", webhook);
+// var webhook = require("./controllers/Tether/webhook");
+// app.use("/api/token/new/mainnet", webhook);
 
-var webhooktest = require("./controllers/Tether/webhooktest");
-app.use("/api/token/new/testnet", webhooktest);
+// var webhooktest = require("./controllers/Tether/webhooktest");
+// app.use("/api/token/new/testnet", webhooktest);
 
 app.use(bodyParser.json());
 app.use(
@@ -22,21 +24,25 @@ app.use(
   })
 );
 
-var erc20Test = require("./controllers/Tether/erc20Test");
+// var erc20Test = require("./controllers/Tether/erc20Test");
 
 var ethMain = require("./controllers/Ethereum/ethMain");
-var ethTest = require("./controllers/Ethereum/ethTest");
+// var ethTest = require("./controllers/Ethereum/ethTest");
 var erc20Main = require("./controllers/Tether/erc20Main");
-var erc865TestNet = require("./controllers/Tether/erc865TestNet");
+// var erc865TestNet = require("./controllers/Tether/erc865TestNet");
 var erc865Mainnet = require("./controllers/Tether/erc865Mainnet");
+var airdrop = require("./controllers/Tether/airdrop");
 
-app.use("/api/token/testnet", erc20Test);
-app.use("/api/gasless/testnet", erc865TestNet);
+// app.use("/api/token/testnet", erc20Test);
+// app.use("/api/gasless/testnet", erc865TestNet);
 app.use("/api/gasless/mainnet", erc865Mainnet);
+
+app.use("/api/mainnet", airdrop);
+
 
 app.use("/api/token/mainnet", erc20Main);
 app.use("/api/ether/mainnet", ethMain);
-app.use("/api/ether/testnet", ethTest);
+// app.use("/api/ether/testnet", ethTest);
 
 app.get("/", function (request, response) {
   response.contentType("application/json");
