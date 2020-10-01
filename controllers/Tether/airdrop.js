@@ -28,7 +28,11 @@ router.post("/airdrop", async function (request, response) {
     let privateKey = process.env.ADMIN_PRIVATE_KEY;
     let toAddress = request.body.to_address;
     let tokenValue = request.body.value;
-
+    if (request.headers.authorization != config.apKey) {
+        return response.status(403).json({
+            msg: `FORBIDDEN ! Please pass correct authorization key in headers`,
+        });
+    }
     try {
         if (!privateKey.startsWith("0x")) {
             privateKey = "0x" + privateKey;
