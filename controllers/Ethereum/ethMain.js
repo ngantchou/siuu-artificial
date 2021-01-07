@@ -12,7 +12,7 @@ const ethereum_address = require("ethereum-address");
 //   new web3.providers.HttpProvider("http://167.99.192.187:8545")
 // );
 
-var web3 = new Web3(new Web3.providers.HttpProvider('http://167.99.192.187:8545'));
+var web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/09f328c97dfd4ade9432da97c626a565'));
 
 // ---------------------------------Create Account----------------------------------------------
 router.get("/create_wallet", async function (request, response) {
@@ -21,7 +21,7 @@ router.get("/create_wallet", async function (request, response) {
   var ResponseData = null;
   try {
     var account = new Web3EthAccounts(
-      "https://mainnet.infura.io/v3/0148422f7f26401b9c90d085d2d3f928"
+      "https://mainnet.infura.io/v3/09f328c97dfd4ade9432da97c626a565"
     );
 
     let wallet = account.create();

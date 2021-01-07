@@ -16,7 +16,7 @@ var web3 = new Web3(
 );
 
 var web32 = new Web3(
-  new Web3.providers.HttpProvider("http://93.115.29.78:8545")
+  new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/09f328c97dfd4ade9432da97c626a565")
 );
 
 var abi = require("./erc865Json").abi; //require("human-standard-token-abi");
