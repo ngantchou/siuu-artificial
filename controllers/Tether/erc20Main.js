@@ -12,7 +12,7 @@ const InputDataDecoder = require("ethereum-input-data-decoder");
 //   web3.setProvider(
 //   new web3.providers.HttpProvider("http://167.99.192.187:8545")
 // );
-var web3 = new Web3(new Web3.providers.HttpProvider('http://167.99.192.187:8545'));
+var web3 = new Web3(new Web3.providers.HttpProvider('http://15.206.170.133:8545'));
 var abi = require("human-standard-token-abi");
 
 const decoder = new InputDataDecoder(config.abi);
